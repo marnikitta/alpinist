@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Alpinist</title>
+
+    <link rel="shortcut icon" href="${prefix}/favicon.ico">
+    <link rel="stylesheet" href="${prefix}/main.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Merriweather:300|Open+Sans" rel="stylesheet">
+</head>
+<body>
+<header>
+    <nav>
+        <ul class="header-element">
+            <li id="home">
+                <a href="${prefix}/">Alpinist</a>
+            </li>
+            <li>
+                <a href="${prefix}/tags">Tags</a>
+            </li>
+            <li>
+                <a href="${prefix}/tags/logbook/">Logbook</a>
+            </li>
+            <li>
+                <a href="${prefix}/tags/golden/">Golden</a>
+            </li>
+            <li>
+                <a href="${prefix}/tags/shelved/">Shelf</a>
+            </li>
+            <li>
+                <a href="${prefix}/tags/unread/">Unread</a>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+<div class="alpinist-body">
+    <div class="topic">${topic}</div>
+    ${body}
+</div>
+<form action="${prefix}/sync" method="post">
+    <button type="submit">Sync</button>
+</form>
+</body>
+</html>

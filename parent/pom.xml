@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <akka.version>2.5.8</akka.version>
+        <akka.version>2.6.1</akka.version>
         <akka-http.version>10.0.11</akka-http.version>
 
         <slf4j.version>1.7.24</slf4j.version>

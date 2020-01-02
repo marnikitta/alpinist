@@ -37,6 +37,7 @@ public class IdeaService extends AbstractActor {
     PatternsCS.ask(linkService, new GetLinks(CommonTags.LOGBOOK), 10000)
       .thenApply(links -> (List<Link>) links)
       .thenAccept(links -> {
+        links.sort(Link.CHRONO_ORDER);
         final List<Idea> ideas = links.stream().flatMap(this::extractIdeas).collect(Collectors.toList());
         sender.tell(ideas, self());
       });

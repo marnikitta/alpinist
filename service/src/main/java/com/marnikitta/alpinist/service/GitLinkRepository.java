@@ -60,6 +60,7 @@ public class GitLinkRepository implements LinkRepository {
     if (Files.exists(baseDir)) {
       rmRf(baseDir);
     }
+    Files.createDirectory(baseDir);
     final GitClient client = new GitClient(baseDir);
     client.init();
     client.addRemote(remote);

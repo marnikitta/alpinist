@@ -28,6 +28,7 @@ import com.marnikitta.alpinist.service.api.Sync;
 import com.marnikitta.alpinist.service.api.UpdatePayload;
 import com.marnikitta.alpinist.tg.Alert;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -252,6 +253,7 @@ public class AlpinistFrontend extends AllDirectives {
     return PatternsCS.ask(ideaService, new IdeaService.GetIdeas(), 10000)
       .thenApply(response -> (List<IdeaService.Idea>) response)
       .thenApply(ideas -> {
+        Collections.reverse(ideas);
         final String body = ideaRenderer.renderIdeas(ideas);
         return renderBody(body, "ideas");
       });

@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
@@ -15,6 +16,10 @@ public class Template {
 
   public Template(String resourceName) {
     this.template = resource(resourceName);
+  }
+
+  public String render(String key, String value) {
+    return render(Collections.singletonMap(key, value));
   }
 
   public String render(Map<String, String> variables) {

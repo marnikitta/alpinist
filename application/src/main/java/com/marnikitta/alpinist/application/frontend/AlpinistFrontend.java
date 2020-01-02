@@ -10,7 +10,9 @@ import akka.http.javadsl.model.headers.Location;
 import akka.http.javadsl.server.AllDirectives;
 import akka.http.javadsl.server.Route;
 import akka.pattern.PatternsCS;
+import com.marnikitta.alpinist.application.IdeaService;
 import com.marnikitta.alpinist.application.frontend.render.CachedLinkRenderer;
+import com.marnikitta.alpinist.application.frontend.render.IdeaRenderer;
 import com.marnikitta.alpinist.application.frontend.render.LinkRenderer;
 import com.marnikitta.alpinist.application.frontend.render.PageRenderer;
 import com.marnikitta.alpinist.application.frontend.render.PopularTagsRenderer;
@@ -41,15 +43,18 @@ public class AlpinistFrontend extends AllDirectives {
   private static final String PREFIX = "";
   private final ActorRef linkService;
   private final ActorRef tgService;
+  private final ActorRef ideaService;
 
   private final PageRenderer pageRenderer = new PageRenderer(PREFIX);
   private final PopularTagsRenderer tagsRenderer = new PopularTagsRenderer(PREFIX);
   private final LinkRenderer linkRender = new CachedLinkRenderer(new TemplateLinkRenderer(PREFIX));
   private final SpaceRenderer spaceRenderer = new SpaceRenderer(PREFIX);
+  private final IdeaRenderer ideaRenderer = new IdeaRenderer(PREFIX);
 
-  public AlpinistFrontend(ActorRef linkService, ActorRef tgService) {
+  public AlpinistFrontend(ActorRef linkService, ActorRef tgService, ActorRef ideaService) {
     this.linkService = linkService;
     this.tgService = tgService;
+    this.ideaService = ideaService;
   }
 
   public Route route() {
@@ -70,10 +75,11 @@ public class AlpinistFrontend extends AllDirectives {
         pathEnd(() -> completeWithFuture(renderPopularTags())),
         pathPrefix(tag -> pathSingleSlash(() -> completeWithFuture(renderTag(tag))))
       )),
+      path("ideas", () -> completeWithFuture(renderIdeas())),
       path("alert", () -> parameter("message", message -> {
-          tgService.tell(new Alert(Alert.Type.ALERT, message), ActorRef.noSender());
-          return complete(StatusCodes.OK);
-        })),
+        tgService.tell(new Alert(Alert.Type.ALERT, message), ActorRef.noSender());
+        return complete(StatusCodes.OK);
+      })),
       pathPrefix("links", () ->
         pathPrefix(name -> route(
           pathEnd(() -> completeWithFuture(renderLink(name, false))),
@@ -240,6 +246,15 @@ public class AlpinistFrontend extends AllDirectives {
     return HttpResponse.create()
       .withStatus(StatusCodes.SEE_OTHER)
       .addHeader(Location.create(PREFIX + '/'));
+  }
+
+  private CompletionStage<HttpResponse> renderIdeas() {
+    return PatternsCS.ask(ideaService, new IdeaService.GetIdeas(), 10000)
+      .thenApply(response -> (List<IdeaService.Idea>) response)
+      .thenApply(ideas -> {
+        final String body = ideaRenderer.renderIdeas(ideas);
+        return renderBody(body, "ideas");
+      });
   }
 
   private CompletionStage<HttpResponse> renderLink(String name, boolean edit) {

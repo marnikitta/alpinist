@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
-public class AlpinistApplication extends AbstractActor {
+public final class AlpinistApplication extends AbstractActor {
   private static final int PORT = 8080;
   private static final String HOST = "0.0.0.0";
 
@@ -97,6 +97,7 @@ public class AlpinistApplication extends AbstractActor {
       linkService = context().actorOf(LinkService.props(Paths.get(localDir)), "link");
     }
 
+    final ActorRef ideaService = context().actorOf(IdeaService.props(linkService), "ideas");
     final ActorRef quickService = context().actorOf(QuickService.props(linkService), "quick");
 
     final ActorRef tgService;
@@ -106,7 +107,7 @@ public class AlpinistApplication extends AbstractActor {
       tgService = context().system().deadLetters();
     }
 
-    final AlpinistFrontend frontend = new AlpinistFrontend(linkService, tgService);
+    final AlpinistFrontend frontend = new AlpinistFrontend(linkService, tgService, ideaService);
     context().actorOf(Shelver.props(linkService, tgService), "shelver");
 
     Http.get(context().system())

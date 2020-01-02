@@ -36,11 +36,11 @@ public class LinkRepositoryTest {
     Files.createDirectory(writerPath);
     //noinspection CallToRuntimeExecWithNonConstantString
     Runtime.getRuntime().exec("cp -r " + templatePath + ' ' + remotePath);
-    writerLinkRepository = new GitLinkRepository(
+    writerLinkRepository = GitLinkRepository.createFromRemote(
       "file://" + remotePath.toAbsolutePath(),
       writerPath
     );
-    readerLinkRepository = new GitLinkRepository(
+    readerLinkRepository = GitLinkRepository.createFromRemote(
       "file://" + remotePath.toAbsolutePath(),
       readerPath
     );

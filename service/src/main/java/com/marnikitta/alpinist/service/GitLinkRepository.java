@@ -44,47 +44,39 @@ public class GitLinkRepository implements LinkRepository {
   private final LinkEncoder encoder = new LinkEncoder();
   private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-  private final boolean hasRemote;
-
-  public GitLinkRepository(Path baseDir) {
-    this(null, baseDir);
+  private GitLinkRepository(GitClient client, Path baseDir) {
+    this.baseDir = baseDir;
+    this.gitClient = client;
   }
 
-  public GitLinkRepository(String remote, Path baseDir) {
-    this.baseDir = baseDir;
-    this.gitClient = new GitClient(baseDir);
-    try {
-      lock.writeLock().lock();
-
-      if (!Files.exists(baseDir.resolve(".git"))) {
-        gitClient.init();
-        gitClient.configure("Alpinist", "alpinist@marnikitta.com");
-      }
-
-      if (remote != null) {
-        log.info("Adding remote");
-        gitClient.addRemote(remote);
-        hasRemote = true;
-      } else {
-        hasRemote = false;
-      }
-
-      sync();
-      log.info("Successfully initialised link repository at base dir '{}'", baseDir);
-    } finally {
-      lock.writeLock().unlock();
+  public static GitLinkRepository createFromDirectory(Path baseDir) {
+    if (!Files.exists(baseDir.resolve(".git"))) {
+      throw new IllegalArgumentException("Directory %s already exists but doesn't have git repository in it");
     }
+    return new GitLinkRepository(new GitClient(baseDir), baseDir);
+  }
+
+  public static GitLinkRepository createFromRemote(String remote, Path baseDir) throws IOException {
+    if (Files.exists(baseDir)) {
+      rmRf(baseDir);
+    }
+    final GitClient client = new GitClient(baseDir);
+    client.init();
+    client.addRemote(remote);
+    client.configure("Alpinist", "alpinist@marnikitta.com");
+    client.pull();
+    return new GitLinkRepository(client, baseDir);
   }
 
   @Override
   public final void sync() {
       try {
         lock.writeLock().lock();
-        if (hasRemote) {
+        if (gitClient.hasRemote()) {
           gitClient.pull();
         }
         normilize();
-        if (hasRemote) {
+        if (gitClient.hasRemote()) {
           gitClient.push();
         }
       } finally {

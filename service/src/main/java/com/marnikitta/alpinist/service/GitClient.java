@@ -18,9 +18,14 @@ class GitClient {
   private final Runtime runtime = Runtime.getRuntime();
   private final Logger log = LoggerFactory.getLogger(GitClient.class);
   private final Path baseDir;
+  private boolean hasRemote = false;
 
   GitClient(Path baseDir) {
     this.baseDir = baseDir;
+  }
+
+  boolean hasRemote() {
+    return hasRemote;
   }
 
   void configure(String name, String email) {
@@ -34,6 +39,7 @@ class GitClient {
 
   void addRemote(String remote) {
     git("remote", "add", "origin", remote);
+    hasRemote = true;
   }
 
   void pull() {

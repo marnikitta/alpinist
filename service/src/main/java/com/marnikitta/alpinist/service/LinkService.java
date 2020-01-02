@@ -16,7 +16,6 @@ import com.marnikitta.alpinist.service.api.UpdatePayload;
 import scala.concurrent.duration.FiniteDuration;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -34,14 +33,11 @@ public class LinkService extends AbstractActor {
   private Cancellable cronSync = null;
 
   private LinkService(String remote, Path baseDir) throws IOException {
-    if (!Files.exists(baseDir)) {
-      Files.createDirectory(baseDir);
-    }
-    this.linkRepository = new CachingLinkRepository(new GitLinkRepository(remote, baseDir));
+    this.linkRepository = new CachingLinkRepository(GitLinkRepository.createFromRemote(remote, baseDir));
   }
 
-  private LinkService(Path baseDir) throws IOException {
-    this(null, baseDir);
+  private LinkService(Path baseDir) {
+    this.linkRepository = new CachingLinkRepository(GitLinkRepository.createFromDirectory(baseDir));
   }
 
   @Override

@@ -12,9 +12,9 @@ Personal knowledge service.
 It is fast, has multi-device access, allows offline editing, collaborative and gives user full control in terms of the recently published paper
 [Kleppmann et al., Local-first software: you own your data, in spite of the cloud](https://martin.kleppmann.com/papers/local-first.pdf)
 
-![cli](pics/edit.png)
-
 ![web](pics/web.png)
+
+![cli](pics/edit.png)
 
 ![tg](pics/tg.png)
 

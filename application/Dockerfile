@@ -1,6 +1,6 @@
-FROM openjdk:8-jdk
+FROM openjdk:13-alpine
 
-RUN apt-get update && apt-get install -y git
+RUN apk update && apk add --no-cache git bash openssh-client
 
 COPY entrypoint.sh /alpinist/entrypoint.sh
 # Copy commands are separated so the common libs would be cached

@@ -2,7 +2,7 @@
 
 Personal knowledge service. 
 
-__TL;DR__ 
+## TL;DR
 - stores notes in [markdown format](base/note/welcome.md) in personal remote git repository
 - periodically fetches and previews them in read-only web-service
 - has [chat-bot](tg/src/main/java/com/marnikitta/alpinist/tg/TelegramService.java) for quick-notes
@@ -18,21 +18,21 @@ It is fast, has multi-device access, allows offline editing, collaborative and g
 
 ![tg](pics/tg.png)
 
-#### Typical workflow #1:
+## Typical workflow #1:
 
 1. You add few notes locally with your favorite editor
 2. Commit and push local changes to remote
 3. Web service fetches updates from remote and renders them
 4. You view and modify your notes from web-interface
 
-#### Typical workflow #2:
+## Typical workflow #2:
 
 1. You found an interesting article
 2. You share article URL to telegram-bot
 3. He creates note for the article, commits it and pushes it to a remote repository
 4. You pull new commits from the remote repository to your laptop and add comments to article note
 
-#### Notes format
+## Notes format
 
 All notes are stored in simple markdown format. It consist of three parts divided by empty lines:
 1. title
@@ -47,7 +47,7 @@ __Tags:__ link, reinforcement, recommender, ml
 Body. __Generic__ [markdown](https://en.wikipedia.org/wiki/Markdown) document
 ```
 
-#### Local CLI utils
+## Local CLI utils
 
 There are bunch of useful bash functions defined in [functions.sh](functions.sh). 
 
@@ -58,7 +58,7 @@ To use them you should:
 For example command `lb` creates [logbook](https://routley.io/posts/logbook/) file `2020-W01.md` 
 with proper structure and opens it for quick thoughts dump.
 
-#### Deployment
+## Deployment
 
 Docker is used for deployment:
 
@@ -75,7 +75,7 @@ environment:
   - REMOTE=git@github.com:username/alpinist-wiki.git # remote git repository
 ```
 
-#### Authorization
+## Authorization
 
 There is no build-in authorization mechanism. It should be managed up the stack, e.g., 
 in [nginx HTTP server](http://nginx.org/) with [client certificate](https://nginx.org/en/docs/http/ngx_http_ssl_module.html).

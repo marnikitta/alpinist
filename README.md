@@ -55,7 +55,7 @@ To use them you should:
 1. Define `$WIKI_BASE` environment variable that points to locally cloned notes repository
 2. Add `source functions.sh` line to your `.bashrc` file
 
-For example command `lb` creates [logbook](https://routley.io/posts/logbook/) file `2020-W01.md` 
+For example `lb` command creates [logbook](https://routley.io/posts/logbook/) file `2020-W01.md` 
 with proper structure and opens it for quick thoughts dump.
 
 ## Deployment

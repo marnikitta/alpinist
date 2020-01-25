@@ -49,7 +49,8 @@ public class QuickService extends AbstractActor {
 
   private void handleNote(QuickNote note, ActorRef sender) {
     final LocalDate date = LocalDate.now(ZoneOffset.ofHours(3));
-    final String formattedDate = date.format(DateTimeFormatter.ISO_LOCAL_DATE);
+    final DateTimeFormatter pattern =  DateTimeFormatter.ofPattern("yyyy-'W'ww");
+    final String formattedDate = date.format(pattern);
     final String logBookId = "lb-" + formattedDate;
 
     PatternsCS.ask(linkService, new Exists(logBookId), 10000)

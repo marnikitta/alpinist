@@ -18,6 +18,7 @@ import scala.concurrent.duration.FiniteDuration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class Shelver extends AbstractActor {
@@ -68,10 +69,14 @@ public class Shelver extends AbstractActor {
     PatternsCS.ask(linkService, new GetLinks(CommonTags.UNREAD), 10000)
       .thenApply(links -> (List<Link>) links)
       .thenAccept(links -> {
+        final Random rd = new Random();
         log.info("{} Unread links received", links.size());
-        final Instant now = Instant.now().minus(7 * 4, ChronoUnit.DAYS);
+
+        final Instant monthAgo = Instant.now()
+          .minus(7 * 4, ChronoUnit.DAYS);
         for (Link link : links) {
-          if (link.updated().compareTo(now) < 0) {
+          final Instant linkExpireDate = monthAgo.minus(rd.nextInt(7 * 2), ChronoUnit.DAYS);
+          if (link.updated().compareTo(linkExpireDate) < 0) {
             linkService.tell(new UpdatePayload(link.name(), link.payload().markedAsShelved()), self());
 
             log.info("Link {} was shelved", link.name());

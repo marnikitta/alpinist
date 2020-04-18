@@ -17,7 +17,7 @@ create_ghost_file() {
   fi
   local dst=$1
   local header=$2
-  local header_lines=$(echo "$header" | wc -l)
+  local header_lines=$(echo "$header" | wc -c)
   if [[ ! -e $dst ]]; then
     touch "$dst"
     echo "$header" > "$dst"
@@ -26,7 +26,7 @@ create_ghost_file() {
   vim "$dst"
 
   # remove file if there are no additional lines
-  if [[ $(wc -l < "$dst") -eq $header_lines ]]; then
+  if [[ $(wc -c < "$dst") -eq $header_lines ]]; then
     rm "$dst"
   fi
 }
@@ -55,4 +55,26 @@ li() {
   local file_name=$(filefy "$title")
 
   create_ghost_file "${WIKI_BASE}/link/${file_name}.md" "# [${title}](${url})\\n\\n__Tags:__ link, unread\\n"
+}
+
+space() {
+  if [[ $# -ne 1 ]]; then
+    echo "Usage: space <name>"
+    return 1
+  fi
+  local title=$1
+  local file_name=$(filefy "$title")
+
+  create_ghost_file "${WIKI_BASE}/space/${file_name}.md" "# ${title}\\n\\n__Tags:__ space, ${title}\\n"
+}
+
+note() {
+  if [[ $# -ne 1 ]]; then
+    echo "Usage: note <name>"
+    return 1
+  fi
+  local title=$1
+  local file_name=$(filefy "$title")
+
+  create_ghost_file "${WIKI_BASE}/note/${file_name}.md" "# ${title}\\n\\n__Tags:__ note\\n"
 }

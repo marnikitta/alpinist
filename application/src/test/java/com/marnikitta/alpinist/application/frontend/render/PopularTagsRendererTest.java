@@ -14,6 +14,6 @@ public class PopularTagsRendererTest {
   @Test(invocationCount = 100)
   public void testRender() {
     final List<String> tags = Stream.generate(generator::nextWord).limit(100).collect(Collectors.toList());
-    renderer.render(tags);
+    renderer.render(tags, true);
   }
 }

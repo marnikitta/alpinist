@@ -211,19 +211,3 @@ header li a:hover {
 .hidden {
     display: none;
 }
-
-.ideas {
-    margin-bottom: 60px;
-}
-
-.ideas ul {
-    list-style-type: circle;
-}
-
-.ideas ul li {
-    margin-bottom: 10px;
-}
-
-.ideas a {
-    text-decoration: none;
-}

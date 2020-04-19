@@ -9,15 +9,15 @@ import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.model.headers.Location;
 import akka.http.javadsl.server.AllDirectives;
 import akka.http.javadsl.server.Route;
+import akka.pattern.Patterns;
 import akka.pattern.PatternsCS;
-import com.marnikitta.alpinist.application.IdeaService;
 import com.marnikitta.alpinist.application.frontend.render.CachedLinkRenderer;
-import com.marnikitta.alpinist.application.frontend.render.IdeaRenderer;
 import com.marnikitta.alpinist.application.frontend.render.LinkRenderer;
 import com.marnikitta.alpinist.application.frontend.render.PageRenderer;
 import com.marnikitta.alpinist.application.frontend.render.PopularTagsRenderer;
 import com.marnikitta.alpinist.application.frontend.render.SpaceRenderer;
 import com.marnikitta.alpinist.application.frontend.render.TemplateLinkRenderer;
+import com.marnikitta.alpinist.application.quasitree.QuasiTree;
 import com.marnikitta.alpinist.model.CommonTags;
 import com.marnikitta.alpinist.model.Link;
 import com.marnikitta.alpinist.model.LinkPayload;
@@ -28,7 +28,7 @@ import com.marnikitta.alpinist.service.api.Sync;
 import com.marnikitta.alpinist.service.api.UpdatePayload;
 import com.marnikitta.alpinist.tg.Alert;
 
-import java.util.Collections;
+import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -42,20 +42,18 @@ import java.util.stream.Stream;
 
 public class AlpinistFrontend extends AllDirectives {
   private static final String PREFIX = "";
+  public static final Duration TIMEOUT_MILLIS = Duration.ofMillis(10000);
   private final ActorRef linkService;
   private final ActorRef tgService;
-  private final ActorRef ideaService;
 
   private final PageRenderer pageRenderer = new PageRenderer(PREFIX);
   private final PopularTagsRenderer tagsRenderer = new PopularTagsRenderer(PREFIX);
   private final LinkRenderer linkRender = new CachedLinkRenderer(new TemplateLinkRenderer(PREFIX));
   private final SpaceRenderer spaceRenderer = new SpaceRenderer(PREFIX);
-  private final IdeaRenderer ideaRenderer = new IdeaRenderer(PREFIX);
 
-  public AlpinistFrontend(ActorRef linkService, ActorRef tgService, ActorRef ideaService) {
+  public AlpinistFrontend(ActorRef linkService, ActorRef tgService) {
     this.linkService = linkService;
     this.tgService = tgService;
-    this.ideaService = ideaService;
   }
 
   public Route route() {
@@ -76,7 +74,6 @@ public class AlpinistFrontend extends AllDirectives {
         pathEnd(() -> completeWithFuture(renderPopularTags())),
         pathPrefix(tag -> pathSingleSlash(() -> completeWithFuture(renderTag(tag))))
       )),
-      path("ideas", () -> completeWithFuture(renderIdeas())),
       path("alert", () -> parameter("message", message -> {
         tgService.tell(new Alert(Alert.Type.ALERT, message), ActorRef.noSender());
         return complete(StatusCodes.OK);
@@ -109,7 +106,7 @@ public class AlpinistFrontend extends AllDirectives {
   }
 
   private CompletionStage<HttpResponse> applyAction(String name, LinkAction action) {
-    return PatternsCS.ask(linkService, new GetLink(name), 10000)
+    return PatternsCS.ask(linkService, new GetLink(name), TIMEOUT_MILLIS)
       .thenApply(l -> (Link) l)
       .thenApply(link -> {
         final LinkPayload newPayload;
@@ -165,14 +162,14 @@ public class AlpinistFrontend extends AllDirectives {
   }
 
   private CompletionStage<HttpResponse> edit(String name, String discussion, String tags) {
-    return PatternsCS.ask(linkService, new GetLink(name), 10000)
+    return PatternsCS.ask(linkService, new GetLink(name), TIMEOUT_MILLIS)
       .thenApply(response -> (Link) response)
       .thenCompose(link -> {
         final Set<String> newTags = Stream.of(tags.split(",")).map(String::trim).collect(Collectors.toSet());
         final LinkPayload p = link.payload()
           .withNewDiscussion(discussion.replace("\r\n", "\n"))
           .withUpdatedTags(newTags);
-        return PatternsCS.ask(linkService, new UpdatePayload(name, p), 10000);
+        return PatternsCS.ask(linkService, new UpdatePayload(name, p), TIMEOUT_MILLIS);
       })
       .thenCompose(o -> CompletableFuture.completedFuture(HttpResponse.create()
           .withStatus(StatusCodes.SEE_OTHER)
@@ -182,8 +179,9 @@ public class AlpinistFrontend extends AllDirectives {
   }
 
   private CompletionStage<HttpResponse> renderRecent() {
-    return PatternsCS.ask(linkService, new GetLinks(), 10000)
+    return Patterns.ask(linkService, new GetLinks(), TIMEOUT_MILLIS)
       .thenApply(response -> (List<Link>) response)
+      .exceptionally(e -> List.of())
       .thenApply((List<Link> links) -> {
         final String body = links.stream()
           .map(linkRender::renderWithoutActions)
@@ -197,49 +195,83 @@ public class AlpinistFrontend extends AllDirectives {
   private CompletionStage<HttpResponse> renderPopularTags() {
     return popularTags()
       .thenApply(tags -> {
-        final String body = tagsRenderer.render(tags);
+        final String body = tagsRenderer.render(tags, true);
         return HttpResponse.create()
           .withEntity(ContentTypes.TEXT_HTML_UTF8, pageRenderer.render(body, "tags"));
       });
   }
 
   private CompletionStage<List<String>> popularTags() {
-    return PatternsCS.ask(linkService, new GetLinks(), 10000)
+    return Patterns.ask(linkService, new GetLinks(), TIMEOUT_MILLIS)
       .thenApply(response -> (List<Link>) response)
-      .thenApply(links -> {
-        final Map<String, Long> countByTag = links.stream()
-          .flatMap(li -> li.payload().tags())
-          .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+      .thenApply(this::extractedPopularTags)
+      .exceptionally(e -> List.of());
+  }
 
-        return countByTag.entrySet().stream()
-          .sorted(Comparator.comparingLong(e -> -e.getValue()))
-          .map(Map.Entry::getKey)
-          .collect(Collectors.toList());
-      });
+  private List<String> extractedPopularTags(List<Link> links) {
+    final Map<String, Long> countByTag = links.stream()
+      .flatMap(li -> li.payload().tags())
+      .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+    return countByTag.entrySet().stream()
+      .sorted(Comparator.comparingLong(e -> -e.getValue()))
+      .map(Map.Entry::getKey)
+      .collect(Collectors.toList());
   }
 
   private CompletionStage<HttpResponse> renderTag(String tag) {
-    return PatternsCS.ask(linkService, new GetLinks(tag), 10000)
-      .thenApply(result -> (List<Link>) result)
+    final CompletionStage<QuasiTree> quasiTree = Patterns.ask(linkService, new GetLinks("quasitree"), TIMEOUT_MILLIS)
+      .thenApply(links -> (List<Link>) links)
       .thenApply(links -> {
-        final List<Link> orderedLinks;
-        if (tag.equals(CommonTags.UNREAD)) {
-          orderedLinks = links.stream().sorted(Comparator.comparing(Link::created)).collect(Collectors.toList());
+        if (links.size() == 1) {
+          return QuasiTree.fromLink(links.get(0).payload());
         } else {
-          orderedLinks = links;
+          return new QuasiTree();
         }
+      }).exceptionally(t -> new QuasiTree());
 
-        final Optional<Link> spaceLink = orderedLinks.stream()
-          .filter(li -> li.name().equals(tag) && li.payload().tags().anyMatch(t -> t.equals(CommonTags.SPACE)))
-          .findFirst();
+    return quasiTree.thenCompose(tree -> {
+      final List<String> childTags = tree.child(tag).collect(Collectors.toList());
+      childTags.add(tag);
+      return Patterns.ask(linkService, new GetLinks(), TIMEOUT_MILLIS)
+        .thenApply(result -> (List<Link>) result)
+        .exceptionally(t -> List.of())
+        .thenApply(links -> {
+          final List<Link> orderedLinks;
+          if (tag.equals(CommonTags.UNREAD)) {
+            orderedLinks = links.stream().sorted(Comparator.comparing(Link::created)).collect(Collectors.toList());
+          } else {
+            orderedLinks = links;
+          }
 
-        final Optional<String> spaceBody = spaceLink.map(s -> spaceRenderer.render(s.name(), s.payload().discussion()));
+          final List<Link> filteredLinks = orderedLinks.stream()
+            .filter(l -> l.payload().tags().anyMatch(childTags::contains))
+            .collect(Collectors.toList());
 
-        final String body = spaceBody.orElse("") + orderedLinks.stream().filter(li -> !li.name().equals(tag))
-          .map(linkRender::renderWithoutActions)
-          .collect(Collectors.joining());
-        return renderBody(body, String.format("%s (%d)", tag, links.size()));
-      });
+          final Optional<String> spaceBody = filteredLinks.stream()
+            .filter(li1 -> li1.name().equals(tag) && li1.payload().tags().anyMatch(t -> t.equals(CommonTags.SPACE)))
+            .findFirst().map(s -> spaceRenderer.render(
+              s.name(),
+              s.payload().discussion()
+            ));
+
+          final List<String> parentTags = tree.parents(tag).collect(Collectors.toList());
+          final List<String> childrenTags = extractedPopularTags(filteredLinks).stream()
+            .filter(childTags::contains)
+            .filter(t -> !t.equals(tag))
+            .collect(Collectors.toList());
+          final String renderedParents = tagsRenderer.render(parentTags, false);
+          final String renderedChildren = tagsRenderer.render(childrenTags, true);
+
+          final String body = renderedParents
+            + renderedChildren
+            + spaceBody.orElse("")
+            + filteredLinks.stream().filter(li -> !li.name().equals(tag))
+            .map(linkRender::renderWithoutActions)
+            .collect(Collectors.joining());
+          return renderBody(body, String.format("%s (%d)", tag, filteredLinks.size()));
+        });
+    });
   }
 
   private HttpResponse sync() {
@@ -249,18 +281,8 @@ public class AlpinistFrontend extends AllDirectives {
       .addHeader(Location.create(PREFIX + '/'));
   }
 
-  private CompletionStage<HttpResponse> renderIdeas() {
-    return PatternsCS.ask(ideaService, new IdeaService.GetIdeas(), 10000)
-      .thenApply(response -> (List<IdeaService.Idea>) response)
-      .thenApply(ideas -> {
-        Collections.reverse(ideas);
-        final String body = ideaRenderer.renderIdeas(ideas);
-        return renderBody(body, "ideas");
-      });
-  }
-
   private CompletionStage<HttpResponse> renderLink(String name, boolean edit) {
-    return PatternsCS.ask(linkService, new GetLink(name), 10000)
+    return PatternsCS.ask(linkService, new GetLink(name), TIMEOUT_MILLIS)
       .thenApply(response -> (Link) response)
       .thenApply(link -> {
         final String body;

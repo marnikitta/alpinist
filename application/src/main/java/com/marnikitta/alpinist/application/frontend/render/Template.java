@@ -1,6 +1,4 @@
-package com.marnikitta.alpinist.application.frontend;
-
-import com.marnikitta.alpinist.application.frontend.render.TemplateLinkRenderer;
+package com.marnikitta.alpinist.application.frontend.render;
 
 import java.io.BufferedReader;
 import java.io.IOException;

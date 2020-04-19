@@ -13,6 +13,7 @@ import akka.japi.pf.ReceiveBuilder;
 import akka.stream.ActorMaterializer;
 import akka.stream.Materializer;
 import com.marnikitta.alpinist.application.frontend.AlpinistFrontend;
+import com.marnikitta.alpinist.application.service.Shelver;
 import com.marnikitta.alpinist.quickservice.QuickService;
 import com.marnikitta.alpinist.service.LinkService;
 import com.marnikitta.alpinist.tg.BotParams;
@@ -97,7 +98,6 @@ public final class AlpinistApplication extends AbstractActor {
       linkService = context().actorOf(LinkService.props(Paths.get(localDir)), "link");
     }
 
-    final ActorRef ideaService = context().actorOf(IdeaService.props(linkService), "ideas");
     final ActorRef quickService = context().actorOf(QuickService.props(linkService), "quick");
 
     final ActorRef tgService;
@@ -107,7 +107,7 @@ public final class AlpinistApplication extends AbstractActor {
       tgService = context().system().deadLetters();
     }
 
-    final AlpinistFrontend frontend = new AlpinistFrontend(linkService, tgService, ideaService);
+    final AlpinistFrontend frontend = new AlpinistFrontend(linkService, tgService);
     context().actorOf(Shelver.props(linkService, tgService), "shelver");
 
     Http.get(context().system())

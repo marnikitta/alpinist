@@ -1,6 +1,5 @@
 package com.marnikitta.alpinist.application.frontend.render;
 
-import com.marnikitta.alpinist.application.frontend.Template;
 import com.marnikitta.alpinist.model.CommonTags;
 import com.marnikitta.alpinist.model.Link;
 import com.vladsch.flexmark.ast.Node;

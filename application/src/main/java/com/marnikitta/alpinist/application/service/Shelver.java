@@ -1,4 +1,4 @@
-package com.marnikitta.alpinist.application;
+package com.marnikitta.alpinist.application.service;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;

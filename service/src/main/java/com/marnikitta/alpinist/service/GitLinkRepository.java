@@ -254,7 +254,7 @@ public class GitLinkRepository implements LinkRepository {
 
   @SuppressWarnings("MethodWithMultipleReturnPoints")
   private Path specialPath(Set<String> tags) {
-    final Collection<String> rootTopics = Arrays.asList(CommonTags.LOGBOOK, CommonTags.LINK, CommonTags.NOTE, CommonTags.SPACE);
+    final Collection<String> rootTopics = Arrays.asList(CommonTags.LOGBOOK, CommonTags.LINK, CommonTags.NOTE, CommonTags.SPACE, CommonTags.CONF);
     for (String rootTopic : rootTopics) {
       if (tags.contains(rootTopic)) {
         return baseDir.resolve(rootTopic);

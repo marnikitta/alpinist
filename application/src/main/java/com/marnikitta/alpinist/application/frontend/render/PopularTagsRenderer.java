@@ -1,9 +1,8 @@
 package com.marnikitta.alpinist.application.frontend.render;
 
-import com.marnikitta.alpinist.application.frontend.Template;
-
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -17,8 +16,13 @@ public class PopularTagsRenderer {
     this.prefix = prefix;
   }
 
-  public String render(List<String> tags) {
-    final Map<String, Integer> trans = new TreeMap<>();
+  public String render(List<String> tags, boolean sorted) {
+    final Map<String, Integer> trans;
+    if (sorted) {
+      trans = new TreeMap<>();
+    } else {
+      trans = new LinkedHashMap<>();
+    }
 
     for (int i = 0; i < tags.size(); i++) {
       final int absolute = (tags.size() - i) * 100 / tags.size();

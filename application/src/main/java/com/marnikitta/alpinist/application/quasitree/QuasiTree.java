@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,6 +27,10 @@ public class QuasiTree {
     children.add(child);
     tree.put(parent, children);
     reversedTree.put(child, parent);
+  }
+
+  public Optional<String> parent(String child) {
+    return Optional.ofNullable(reversedTree.getOrDefault(child, null));
   }
 
   public Stream<String> parents(String child) {

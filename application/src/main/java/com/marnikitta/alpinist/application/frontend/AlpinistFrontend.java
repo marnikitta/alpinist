@@ -255,16 +255,20 @@ public class AlpinistFrontend extends AllDirectives {
               s.payload().discussion()
             ));
 
-          final List<String> parentTags = tree.parents(tag).collect(Collectors.toList());
+          final Optional<String> parent = tree.parent(tag);
           final List<String> childrenTags = extractedPopularTags(filteredLinks).stream()
             .filter(childTags::contains)
             .filter(t -> !t.equals(tag))
             .collect(Collectors.toList());
-          final String renderedParents = tagsRenderer.render(parentTags, false);
-          final String renderedChildren = tagsRenderer.render(childrenTags, true);
 
-          final String body = renderedParents
-            + renderedChildren
+          final String tagsTree;
+          if (parent.isPresent()) {
+            tagsTree = tagsRenderer.renderTree(parent.get(), childrenTags);
+          } else {
+            tagsTree = tagsRenderer.render(childrenTags, true);
+          }
+
+          final String body = tagsTree
             + spaceBody.orElse("")
             + filteredLinks.stream().filter(li -> !li.name().equals(tag))
             .map(linkRender::renderWithoutActions)

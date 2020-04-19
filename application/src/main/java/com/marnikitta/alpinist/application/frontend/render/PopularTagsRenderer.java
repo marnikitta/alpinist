@@ -16,7 +16,17 @@ public class PopularTagsRenderer {
     this.prefix = prefix;
   }
 
+  public String renderTree(String parentTag, List<String> childTags) {
+    final String parent = tagTemplate.render(Map.of("prefix", prefix, "tag", parentTag, "freq", "parent"));
+    final String chile = renderInner(childTags, true);
+    return tagsCloudTemplate.render(Collections.singletonMap("tags", parent + chile));
+  }
+
   public String render(List<String> tags, boolean sorted) {
+    return tagsCloudTemplate.render(Collections.singletonMap("tags", renderInner(tags, sorted)));
+  }
+
+  private String renderInner(List<String> tags, boolean sorted) {
     final Map<String, Integer> trans;
     if (sorted) {
       trans = new TreeMap<>();
@@ -39,6 +49,6 @@ public class PopularTagsRenderer {
       props.put("freq", String.valueOf(freq));
       tagsBody.append(tagTemplate.render(props));
     });
-    return tagsCloudTemplate.render(Collections.singletonMap("tags", tagsBody.toString()));
+    return tagsBody.toString();
   }
 }

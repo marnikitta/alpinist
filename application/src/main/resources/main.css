@@ -184,6 +184,11 @@ header li a:hover {
      margin: 5px 20px 5px 0;
 }
 
+.freq-parent {
+    opacity: 1.0;
+    margin-right: 40px;
+}
+
 .freq-100 {
     opacity: 1.0;
 }

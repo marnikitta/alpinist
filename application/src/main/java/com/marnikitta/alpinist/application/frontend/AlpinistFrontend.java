@@ -237,12 +237,15 @@ public class AlpinistFrontend extends AllDirectives {
         .thenApply(result -> (List<Link>) result)
         .exceptionally(t -> List.of())
         .thenApply(links -> {
-          final List<Link> orderedLinks;
-          if (tag.equals(CommonTags.UNREAD)) {
-            orderedLinks = links.stream().sorted(Comparator.comparing(Link::created)).collect(Collectors.toList());
-          } else {
-            orderedLinks = links;
-          }
+          final Stream<Link> unreadLinks = links.stream()
+            .filter(l -> l.payload().tags().anyMatch(t -> t.equals(CommonTags.UNREAD)))
+            .sorted(Comparator.naturalOrder());
+
+          final Stream<Link> readLinks = links.stream()
+            .filter(l -> l.payload().tags().noneMatch(t -> t.equals(CommonTags.UNREAD)))
+            .sorted(Comparator.naturalOrder());
+
+          final List<Link> orderedLinks = Stream.concat(unreadLinks, readLinks).collect(Collectors.toList());
 
           final List<Link> filteredLinks = orderedLinks.stream()
             .filter(l -> l.payload().tags().anyMatch(childTags::contains))

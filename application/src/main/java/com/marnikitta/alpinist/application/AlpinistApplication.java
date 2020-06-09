@@ -108,7 +108,7 @@ public final class AlpinistApplication extends AbstractActor {
     }
 
     final AlpinistFrontend frontend = new AlpinistFrontend(linkService, tgService);
-    context().actorOf(Shelver.props(linkService, tgService), "shelver");
+    //context().actorOf(Shelver.props(linkService, tgService), "shelver");
 
     Http.get(context().system())
       .bindAndHandle(

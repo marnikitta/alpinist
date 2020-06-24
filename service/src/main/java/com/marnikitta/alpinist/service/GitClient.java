@@ -53,13 +53,13 @@ class GitClient {
   }
 
   Instant createTime(Path path) {
-    final String[] split = git("log", "--format=%aI", "--", path.toString()).split("\n");
+    final String[] split = git("log", "-1", "--format=%aI", "--reverse", "--", path.toString()).split("\n");
     final String created = split[split.length - 1];
     return DateTimeFormatter.ISO_ZONED_DATE_TIME.parse(created, Instant::from);
   }
 
   Instant updateTime(Path path) {
-    final String[] split = git("log", "--format=%aI", "--", path.toString()).split("\n");
+    final String[] split = git("log", "-1", "--format=%aI", "--", path.toString()).split("\n");
     final String created = split[0];
     return DateTimeFormatter.ISO_ZONED_DATE_TIME.parse(created, Instant::from);
   }

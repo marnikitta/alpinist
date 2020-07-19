@@ -20,7 +20,7 @@ public class QuasiTree {
   private final Map<String, String> reversedTree = new HashMap<>();
 
   public void addEdge(String child, String parent) {
-    if (tree.containsKey(child)) {
+    if (reversedTree.containsKey(child)) {
       return;
     }
     final List<String> children = tree.getOrDefault(parent, new ArrayList<>());

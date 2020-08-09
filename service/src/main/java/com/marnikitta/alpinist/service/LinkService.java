@@ -118,6 +118,7 @@ public class LinkService extends AbstractActor {
             final Set<String> requestTags = getLinks.tags().collect(Collectors.toSet());
             return tags.containsAll(requestTags);
           })
+          .sorted()
           .skip(getLinks.offset())
           .limit(getLinks.limit())
           .collect(Collectors.toList());

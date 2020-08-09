@@ -6,12 +6,11 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class Link implements Comparable<Link> {
-  public static final Comparator<Link> CHRONO_ORDER = Comparator
-    .comparing(Link::updated)
+  public static final Comparator<Link> SERP_ORDER = Comparator
+    .comparing(Link::payload, CommonTags.READ_UNREAD_COMPARATOR)
+    .thenComparing(Link::updated)
     .thenComparing(Link::created)
-    .thenComparing(Link::name);
-
-  public static final Comparator<Link> SERP_ORDER = CHRONO_ORDER.reversed();
+    .thenComparing(Link::name).reversed();
 
   private final String name;
   private final Instant created;

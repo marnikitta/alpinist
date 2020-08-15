@@ -184,6 +184,7 @@ public class AlpinistFrontend extends AllDirectives {
       .exceptionally(e -> List.of())
       .thenApply((List<Link> links) -> {
         final String body = links.stream()
+          .sorted(Comparator.comparing(Link::updated).reversed())
           .map(linkRender::renderWithoutActions)
           .collect(Collectors.joining());
 

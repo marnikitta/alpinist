@@ -7,10 +7,11 @@ import akka.japi.pf.ReceiveBuilder;
 import com.marnikitta.alpinist.model.Link;
 import com.marnikitta.alpinist.model.LinkRepository;
 import com.marnikitta.alpinist.service.api.CreateLink;
+import com.marnikitta.alpinist.service.api.CreateOrUpdate;
 import com.marnikitta.alpinist.service.api.DeleteLink;
-import com.marnikitta.alpinist.service.api.Exists;
 import com.marnikitta.alpinist.service.api.GetLink;
-import com.marnikitta.alpinist.service.api.GetLinks;
+import com.marnikitta.alpinist.service.api.GetSpace;
+import com.marnikitta.alpinist.service.api.LinkSpace;
 import com.marnikitta.alpinist.service.api.Sync;
 import com.marnikitta.alpinist.service.api.UpdatePayload;
 import scala.concurrent.duration.FiniteDuration;
@@ -19,7 +20,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -34,10 +35,16 @@ public class LinkService extends AbstractActor {
 
   private LinkService(String remote, Path baseDir) throws IOException {
     this.linkRepository = new CachingLinkRepository(GitLinkRepository.createFromRemote(remote, baseDir));
+    //this.linkRepository = new CachingLinkRepository(new FileLinkRepository(baseDir));
   }
 
   private LinkService(Path baseDir) {
     this.linkRepository = new CachingLinkRepository(GitLinkRepository.createFromDirectory(baseDir));
+    //this.linkRepository = new CachingLinkRepository(new FileLinkRepository(baseDir));
+  }
+
+  private LinkService(LinkRepository linkRepository) {
+    this.linkRepository = linkRepository;
   }
 
   @Override
@@ -63,6 +70,10 @@ public class LinkService extends AbstractActor {
     return Props.create(LinkService.class, basePath);
   }
 
+  public static Props props(LinkRepository linkRepository) {
+    return Props.create(LinkService.class, linkRepository);
+  }
+
   @Override
   public Receive createReceive() {
     return ReceiveBuilder.create()
@@ -75,14 +86,6 @@ public class LinkService extends AbstractActor {
           sender().tell(link, self());
         } catch (IllegalArgumentException e) {
           sender().tell(new Failure(e), self());
-        }
-      })
-      .match(Exists.class, exists -> {
-        try {
-          linkOrThrow(exists.name());
-          sender().tell(true, self());
-        } catch (NoSuchElementException e) {
-          sender().tell(false, self());
         }
       })
       .match(UpdatePayload.class, updatePayload -> {
@@ -106,30 +109,56 @@ public class LinkService extends AbstractActor {
       })
       .match(GetLink.class, getLink -> {
         try {
-          sender().tell(linkOrThrow(getLink.name()), self());
+          sender().tell(link(getLink.name()), self());
         } catch (NoSuchElementException e) {
           sender().tell(new Failure(e), self());
         }
       })
-      .match(GetLinks.class, getLinks -> {
-        final List<Link> links = linkRepository.links()
-          .filter(l -> {
-            final Set<String> tags = l.payload().tags().collect(Collectors.toSet());
-            final Set<String> requestTags = getLinks.tags().collect(Collectors.toSet());
-            return tags.containsAll(requestTags);
-          })
-          .sorted()
-          .skip(getLinks.offset())
-          .limit(getLinks.limit())
-          .collect(Collectors.toList());
-        sender().tell(links, self());
+      .match(GetSpace.class, getSpace -> {
+        if (getSpace.name().equals("recent")) {
+          sender().tell(new LinkSpace("recent", linkRepository.links().collect(Collectors.toList())), self());
+        } else {
+          final List<Link> incomming = incommingLinks(getSpace.name());
+          final LinkSpace space = link(getSpace.name()).map(l -> new LinkSpace(l, incomming))
+            .orElse(new LinkSpace(getSpace.name(), incomming));
+          sender().tell(space, self());
+        }
+      })
+      .match(CreateOrUpdate.class, createOrUpdate -> {
+        if (!createOrUpdate.name.equals(createOrUpdate.link.name())) {
+          throw new IllegalArgumentException("cant rename links yet");
+        }
+
+        final Optional<Link> originalLink = link(createOrUpdate.name);
+        if (createOrUpdate.link.payload().isEmpty()) {
+          // Updated link is empty. It is useless now
+          linkRepository.delete(createOrUpdate.name);
+        } else if (originalLink.isPresent()
+          && createOrUpdate.name.equals(createOrUpdate.link.name())
+          && !originalLink.get().equals(createOrUpdate.link)) {
+          // No renaming
+          linkRepository.update(createOrUpdate.name, createOrUpdate.link.payload().withUpdatedNow());
+        } else if (originalLink.isEmpty() && !createOrUpdate.link.payload().isEmpty()) {
+          linkRepository.create(createOrUpdate.name, createOrUpdate.link.payload().withUpdatedNow());
+        } else {
+          throw new IllegalStateException();
+        }
+        sender().tell(true, self());
       })
       .build();
   }
 
-  private Link linkOrThrow(String name) {
+  private Optional<Link> link(String name) {
     return linkRepository.links()
       .filter(l -> l.name().equals(name))
-      .findAny().orElseThrow(() -> new NoSuchElementException("There is no link with name '" + name + '\''));
+      .findAny();
+  }
+
+  private List<Link> incommingLinks(String name) {
+    return linkRepository.links().filter(l -> l.payload().hasOutlink(name)).collect(Collectors.toList());
+  }
+
+  private Link linkOrThrow(String name) {
+    return link(name).orElseThrow(() -> new NoSuchElementException("There is no link with name '" + name + '\''));
   }
 }

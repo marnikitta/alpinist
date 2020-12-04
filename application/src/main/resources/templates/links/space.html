@@ -1,8 +1,15 @@
-<div class="link space">
-    <article>
-        <div class="link-actions">
-            ${actions}
+<article class="space">
+    <div class="space-header">
+        <div class="space-title link-title">
+            ${title}
+            <a href="${url}" class="${hidden} pretty-link">🔗</a>
         </div>
+        <div class="space-actions">${actions}</div>
+    </div>
+    <div class="discussion">
         ${discussion}
-    </article>
-</div>
+    </div>
+    <div class="incoming-links">
+        ${incoming-links}
+    </div>
+</article>

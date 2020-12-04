@@ -4,9 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Template {
@@ -26,15 +29,20 @@ public class Template {
       result[0] = result[0].replaceAll("\\$\\{" + variable + '}', Matcher.quoteReplacement(value));
     });
 
-    if (result[0].split("\\$\\{[a-zA-Z]+\\}").length > 1) {
-      throw new IllegalArgumentException("Not all placeholders are filled");
+    final Matcher matcher = Pattern.compile("\\$\\{(?<placeholder>[a-zA-Z]+)}").matcher(result[0]);
+    final List<String> missedPlaceholders = new ArrayList<>();
+    while (matcher.find()) {
+      missedPlaceholders.add(matcher.group("placeholder"));
+    }
+    if (!missedPlaceholders.isEmpty()) {
+      throw new IllegalArgumentException("Not all placeholders are filled " + missedPlaceholders);
     }
     return result[0];
   }
 
   private String resource(String name) {
     try (BufferedReader br = new BufferedReader(new InputStreamReader(
-      TemplateLinkRenderer.class.getClassLoader().getResourceAsStream("templates/" + name))
+      IncomingLinkRenderer.class.getClassLoader().getResourceAsStream("templates/" + name))
     )) {
       return br.lines().collect(Collectors.joining("\n"));
     } catch (IOException e) {

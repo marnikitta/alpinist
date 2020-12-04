@@ -10,35 +10,24 @@ import akka.http.javadsl.model.headers.Location;
 import akka.http.javadsl.server.AllDirectives;
 import akka.http.javadsl.server.Route;
 import akka.pattern.Patterns;
-import akka.pattern.PatternsCS;
-import com.marnikitta.alpinist.application.frontend.render.CachedLinkRenderer;
-import com.marnikitta.alpinist.application.frontend.render.LinkRenderer;
+import com.marnikitta.alpinist.application.frontend.render.EditLinkRenderer;
 import com.marnikitta.alpinist.application.frontend.render.PageRenderer;
-import com.marnikitta.alpinist.application.frontend.render.PopularTagsRenderer;
 import com.marnikitta.alpinist.application.frontend.render.SpaceRenderer;
-import com.marnikitta.alpinist.application.frontend.render.TemplateLinkRenderer;
-import com.marnikitta.alpinist.application.quasitree.QuasiTree;
-import com.marnikitta.alpinist.model.CommonTags;
 import com.marnikitta.alpinist.model.Link;
 import com.marnikitta.alpinist.model.LinkPayload;
+import com.marnikitta.alpinist.service.api.CreateOrUpdate;
 import com.marnikitta.alpinist.service.api.DeleteLink;
 import com.marnikitta.alpinist.service.api.GetLink;
-import com.marnikitta.alpinist.service.api.GetLinks;
+import com.marnikitta.alpinist.service.api.GetSpace;
+import com.marnikitta.alpinist.service.api.LinkSpace;
 import com.marnikitta.alpinist.service.api.Sync;
-import com.marnikitta.alpinist.service.api.UpdatePayload;
 import com.marnikitta.alpinist.tg.Alert;
 
 import java.time.Duration;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class AlpinistFrontend extends AllDirectives {
   private static final String PREFIX = "";
@@ -47,9 +36,8 @@ public class AlpinistFrontend extends AllDirectives {
   private final ActorRef tgService;
 
   private final PageRenderer pageRenderer = new PageRenderer(PREFIX);
-  private final PopularTagsRenderer tagsRenderer = new PopularTagsRenderer(PREFIX);
-  private final LinkRenderer linkRender = new CachedLinkRenderer(new TemplateLinkRenderer(PREFIX));
   private final SpaceRenderer spaceRenderer = new SpaceRenderer(PREFIX);
+  private final EditLinkRenderer editLinkRenderer = new EditLinkRenderer(PREFIX);
 
   public AlpinistFrontend(ActorRef linkService, ActorRef tgService) {
     this.linkService = linkService;
@@ -69,82 +57,38 @@ public class AlpinistFrontend extends AllDirectives {
       path("sync", () ->
         post(() -> complete(sync()))
       ),
-      pathEndOrSingleSlash(() -> completeWithFuture(renderRecent())),
-      pathPrefix("tags", () -> route(
-        pathEnd(() -> completeWithFuture(renderPopularTags())),
-        pathPrefix(tag -> pathSingleSlash(() -> completeWithFuture(renderTag(tag))))
-      )),
+      pathEndOrSingleSlash(() -> completeWithFuture(renderSpace("recent"))),
       path("alert", () -> parameter("message", message -> {
         tgService.tell(new Alert(Alert.Type.ALERT, message), ActorRef.noSender());
         return complete(StatusCodes.OK);
       })),
-      pathPrefix("links", () ->
+      pathPrefix("links", () -> concat(
         pathPrefix(name -> route(
-          pathEnd(() -> completeWithFuture(renderLink(name, false))),
-          get(() -> path(LinkAction.EDIT.encoded, () -> completeWithFuture(renderLink(name, true)))),
+          pathEnd(() -> completeWithFuture(renderSpace(name))),
+          get(() -> path(LinkAction.EDIT.encoded, () -> completeWithFuture(renderEdit(name)))),
           post(() -> route(
             path(LinkAction.DELETE.encoded, () -> completeWithFuture(delete(name))),
-            path(LinkAction.READ.encoded, () -> completeWithFuture(applyAction(name, LinkAction.READ))),
-            path(LinkAction.UNREAD.encoded, () -> completeWithFuture(applyAction(name, LinkAction.UNREAD))),
-            path(LinkAction.SHELVE.encoded, () -> completeWithFuture(applyAction(name, LinkAction.SHELVE))),
-            path(LinkAction.GOLDEN.encoded, () -> completeWithFuture(applyAction(name, LinkAction.GOLDEN))),
-            path(LinkAction.UNGOLDEN.encoded, () -> completeWithFuture(applyAction(name, LinkAction.UNGOLDEN))),
             path(LinkAction.EDIT.encoded, () -> formFieldMap(map -> {
+              final String title = map.get("title");
+              final String nameField = map.get("name");
+              final String url = map.get("url");
               final String discussion = map.get("discussion");
-              final String tags = map.get("tags");
 
-              if (discussion == null || tags == null) {
+              if (title == null || nameField == null || url == null || discussion == null) {
                 throw new IllegalArgumentException("Expected discussion and tags params");
               }
 
-              return completeWithFuture(edit(name, discussion, tags));
+              return completeWithFuture(edit(name, nameField, title, url, discussion));
             }))
           ))
         ))
-      )
+      ))
     );
   }
 
-  private CompletionStage<HttpResponse> applyAction(String name, LinkAction action) {
-    return PatternsCS.ask(linkService, new GetLink(name), TIMEOUT_MILLIS)
-      .thenApply(l -> (Link) l)
-      .thenApply(link -> {
-        final LinkPayload newPayload;
-        switch (action) {
-          case READ:
-            newPayload = link.payload().markedAsRead();
-            break;
-          case UNREAD:
-            newPayload = link.payload().markedAsUnread();
-            break;
-          case SHELVE:
-            newPayload = link.payload().markedAsShelved();
-            break;
-          case GOLDEN:
-            newPayload = link.payload().markedAsGolden();
-            break;
-          case UNGOLDEN:
-            newPayload = link.payload().markedAsUngolden();
-            break;
-          default:
-            throw new IllegalStateException("Some status update is not handled");
-        }
-
-        linkService.tell(new UpdatePayload(name, newPayload), ActorRef.noSender());
-        return HttpResponse.create()
-          .withStatus(StatusCodes.SEE_OTHER)
-          .addHeader(Location.create(PREFIX + "/links/" + name));
-      });
-  }
-
   public enum LinkAction {
-    READ("read"),
-    UNREAD("unread"),
-    SHELVE("shelve"),
-    GOLDEN("golden"),
     DELETE("delete"),
-    EDIT("edit"),
-    UNGOLDEN("ungolden");
+    EDIT("edit");
 
     public final String encoded;
 
@@ -155,121 +99,32 @@ public class AlpinistFrontend extends AllDirectives {
 
   private CompletionStage<HttpResponse> delete(String name) {
     linkService.tell(new DeleteLink(name), ActorRef.noSender());
-    return CompletableFuture.completedFuture(HttpResponse.create()
+    return renderSpace(name);
+  }
+
+  private CompletionStage<HttpResponse> edit(String originalName,
+                                             String name,
+                                             String title,
+                                             String url,
+                                             String discussion) {
+    return Patterns.ask(
+      linkService,
+      new CreateOrUpdate(
+        originalName,
+        new Link(name, new LinkPayload(title.trim(), url.trim(), discussion.replace("\r\n", "\n").trim()))
+      ),
+      TIMEOUT_MILLIS
+    ).thenCompose(o -> CompletableFuture.completedFuture(HttpResponse.create()
       .withStatus(StatusCodes.SEE_OTHER)
-      .addHeader(Location.create(PREFIX + '/'))
-    );
+      .addHeader(Location.create(PREFIX + "/links/" + name))
+    ));
   }
 
-  private CompletionStage<HttpResponse> edit(String name, String discussion, String tags) {
-    return PatternsCS.ask(linkService, new GetLink(name), TIMEOUT_MILLIS)
-      .thenApply(response -> (Link) response)
-      .thenCompose(link -> {
-        final Set<String> newTags = Stream.of(tags.split(",")).map(String::trim).collect(Collectors.toSet());
-        final LinkPayload p = link.payload()
-          .withNewDiscussion(discussion.replace("\r\n", "\n"))
-          .withUpdatedTags(newTags);
-        return PatternsCS.ask(linkService, new UpdatePayload(name, p), TIMEOUT_MILLIS);
-      })
-      .thenCompose(o -> CompletableFuture.completedFuture(HttpResponse.create()
-          .withStatus(StatusCodes.SEE_OTHER)
-          .addHeader(Location.create(PREFIX + "/links/" + name))
-        )
-      );
-  }
-
-  private CompletionStage<HttpResponse> renderRecent() {
-    return Patterns.ask(linkService, new GetLinks(), TIMEOUT_MILLIS)
-      .thenApply(response -> (List<Link>) response)
-      .exceptionally(e -> List.of())
-      .thenApply((List<Link> links) -> {
-        final String body = links.stream()
-          .sorted(Comparator.comparing(Link::updated).reversed())
-          .map(linkRender::renderWithoutActions)
-          .collect(Collectors.joining());
-
-        return HttpResponse.create()
-          .withEntity(ContentTypes.TEXT_HTML_UTF8, pageRenderer.render(body, "recent"));
-      });
-  }
-
-  private CompletionStage<HttpResponse> renderPopularTags() {
-    return popularTags()
-      .thenApply(tags -> {
-        final String body = tagsRenderer.render(tags, true);
-        return HttpResponse.create()
-          .withEntity(ContentTypes.TEXT_HTML_UTF8, pageRenderer.render(body, "tags"));
-      });
-  }
-
-  private CompletionStage<List<String>> popularTags() {
-    return Patterns.ask(linkService, new GetLinks(), TIMEOUT_MILLIS)
-      .thenApply(response -> (List<Link>) response)
-      .thenApply(this::extractedPopularTags)
-      .exceptionally(e -> List.of());
-  }
-
-  private List<String> extractedPopularTags(List<Link> links) {
-    final Map<String, Long> countByTag = links.stream()
-      .flatMap(li -> li.payload().tags())
-      .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-
-    return countByTag.entrySet().stream()
-      .sorted(Comparator.comparingLong(e -> -e.getValue()))
-      .map(Map.Entry::getKey)
-      .collect(Collectors.toList());
-  }
-
-  private CompletionStage<HttpResponse> renderTag(String tag) {
-    final CompletionStage<QuasiTree> quasiTree = Patterns.ask(linkService, new GetLinks("quasitree"), TIMEOUT_MILLIS)
-      .thenApply(links -> (List<Link>) links)
-      .thenApply(links -> {
-        if (links.size() == 1) {
-          return QuasiTree.fromLink(links.get(0).payload());
-        } else {
-          return new QuasiTree();
-        }
-      }).exceptionally(t -> new QuasiTree());
-
-    return quasiTree.thenCompose(tree -> {
-      final List<String> childTags = tree.child(tag).collect(Collectors.toList());
-      childTags.add(tag);
-      return Patterns.ask(linkService, new GetLinks(), TIMEOUT_MILLIS)
-        .thenApply(result -> (List<Link>) result)
-        .exceptionally(t -> List.of())
-        .thenApply(links -> {
-          final List<Link> filteredLinks = links.stream()
-            .filter(l -> l.payload().tags().anyMatch(childTags::contains))
-            .collect(Collectors.toList());
-
-          final Optional<String> spaceBody = filteredLinks.stream()
-            .filter(li1 -> li1.name().equals(tag) && li1.payload().tags().anyMatch(t -> t.equals(CommonTags.SPACE)))
-            .findFirst().map(s -> spaceRenderer.render(
-              s.name(),
-              s.payload().discussion()
-            ));
-
-          final Optional<String> parent = tree.parent(tag);
-          final List<String> childrenTags = extractedPopularTags(filteredLinks).stream()
-            .filter(childTags::contains)
-            .filter(t -> !t.equals(tag))
-            .collect(Collectors.toList());
-
-          final String tagsTree;
-          if (parent.isPresent()) {
-            tagsTree = tagsRenderer.renderTree(parent.get(), childrenTags);
-          } else {
-            tagsTree = tagsRenderer.render(childrenTags, true);
-          }
-
-          final String body = tagsTree
-            + spaceBody.orElse("")
-            + filteredLinks.stream().filter(li -> !li.name().equals(tag))
-            .map(linkRender::renderWithoutActions)
-            .collect(Collectors.joining());
-          return renderBody(body, String.format("%s (%d)", tag, filteredLinks.size()));
-        });
-    });
+  private CompletionStage<HttpResponse> renderSpace(String name) {
+    return Patterns.ask(linkService, new GetSpace(name), TIMEOUT_MILLIS)
+      .thenApply(result -> (LinkSpace) result)
+      .exceptionally(t -> new LinkSpace(name, List.of()))
+      .thenApply(space -> renderBody(spaceRenderer.render(space)));
   }
 
   private HttpResponse sync() {
@@ -279,23 +134,15 @@ public class AlpinistFrontend extends AllDirectives {
       .addHeader(Location.create(PREFIX + '/'));
   }
 
-  private CompletionStage<HttpResponse> renderLink(String name, boolean edit) {
-    return PatternsCS.ask(linkService, new GetLink(name), TIMEOUT_MILLIS)
-      .thenApply(response -> (Link) response)
-      .thenApply(link -> {
-        final String body;
-        if (edit) {
-          body = linkRender.renderEdit(link);
-        } else {
-          body = linkRender.renderWithActions(link);
-        }
-        return HttpResponse.create()
-          .withEntity(ContentTypes.TEXT_HTML_UTF8, pageRenderer.render(body));
-      });
+  private CompletionStage<HttpResponse> renderEdit(String name) {
+    return Patterns.ask(linkService, new GetLink(name), TIMEOUT_MILLIS)
+      .thenApply(response -> (Optional<Link>) response)
+      .thenApply(l -> l.orElse(new Link(name, new LinkPayload(name, "", ""))))
+      .thenApply(link -> renderBody(editLinkRenderer.render(link)));
   }
 
-  private HttpResponse renderBody(String body, String title) {
+  private HttpResponse renderBody(String body) {
     return HttpResponse.create()
-      .withEntity(ContentTypes.TEXT_HTML_UTF8, pageRenderer.render(body, title));
+      .withEntity(ContentTypes.TEXT_HTML_UTF8, pageRenderer.render(body));
   }
 }

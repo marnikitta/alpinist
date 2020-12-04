@@ -13,7 +13,6 @@ import akka.japi.pf.ReceiveBuilder;
 import akka.stream.ActorMaterializer;
 import akka.stream.Materializer;
 import com.marnikitta.alpinist.application.frontend.AlpinistFrontend;
-import com.marnikitta.alpinist.application.service.Shelver;
 import com.marnikitta.alpinist.quickservice.QuickService;
 import com.marnikitta.alpinist.service.LinkService;
 import com.marnikitta.alpinist.tg.BotParams;

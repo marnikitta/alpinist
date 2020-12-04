@@ -1,26 +1,20 @@
 package com.marnikitta.alpinist.model;
 
-import java.time.Instant;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class Link implements Comparable<Link> {
   public static final Comparator<Link> SERP_ORDER = Comparator
-    .comparing(Link::payload, CommonTags.READ_UNREAD_COMPARATOR)
-    .thenComparing(Link::updated)
-    .thenComparing(Link::created)
+    .comparing(Link::payload)
     .thenComparing(Link::name).reversed();
 
   private final String name;
-  private final Instant created;
-  private final Instant updated;
   private final LinkPayload payload;
 
-  public Link(String name, Instant created, Instant updated, LinkPayload payload) {
-    this.updated = updated;
+  public Link(String name, LinkPayload payload) {
     this.name = name;
-    this.created = created;
     this.payload = payload;
   }
 
@@ -28,16 +22,8 @@ public class Link implements Comparable<Link> {
     return name;
   }
 
-  public Instant created() {
-    return created;
-  }
-
   public LinkPayload payload() {
     return payload;
-  }
-
-  public Instant updated() {
-    return updated;
   }
 
   @Override
@@ -55,31 +41,32 @@ public class Link implements Comparable<Link> {
     }
     final Link link = (Link) o;
     return Objects.equals(name, link.name) &&
-      Objects.equals(created, link.created) &&
-      Objects.equals(updated, link.updated) &&
       Objects.equals(payload, link.payload);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, created, updated, payload);
+    return Objects.hash(name, payload);
   }
 
   @Override
   public String toString() {
     return "Link{" +
       "name='" + name + '\'' +
-      ", created=" + created +
-      ", updated=" + updated +
       ", payload=" + payload +
       '}';
   }
 
   public static String filefy(String title) {
     final Pattern pattern = Pattern.compile("[^\\p{Alnum} ]", Pattern.UNICODE_CHARACTER_CLASS);
-    return pattern.matcher(title.toLowerCase()).replaceAll("")
+    final String result = pattern.matcher(title.toLowerCase()).replaceAll("")
       .replaceAll("\\s+", " ")
       .trim()
       .replaceAll(" ", "_");
+    if (result.isBlank()) {
+      return UUID.randomUUID().toString();
+    }
+
+    return result;
   }
 }

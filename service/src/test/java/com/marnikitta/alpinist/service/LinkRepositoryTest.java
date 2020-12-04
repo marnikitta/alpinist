@@ -29,9 +29,9 @@ public class LinkRepositoryTest {
 
   @BeforeMethod
   public void setUp() throws IOException {
-    GitLinkRepository.rmRf(remotePath);
-    GitLinkRepository.rmRf(writerPath);
-    GitLinkRepository.rmRf(readerPath);
+    FileLinkRepository.rmRf(remotePath);
+    FileLinkRepository.rmRf(writerPath);
+    FileLinkRepository.rmRf(readerPath);
     Files.createDirectory(readerPath);
     Files.createDirectory(writerPath);
     //noinspection CallToRuntimeExecWithNonConstantString
@@ -48,14 +48,14 @@ public class LinkRepositoryTest {
 
   @AfterMethod
   public void tearDown() throws IOException {
-    GitLinkRepository.rmRf(remotePath);
-    GitLinkRepository.rmRf(writerPath);
-    GitLinkRepository.rmRf(readerPath);
+    FileLinkRepository.rmRf(remotePath);
+    FileLinkRepository.rmRf(writerPath);
+    FileLinkRepository.rmRf(readerPath);
   }
 
   @Test
   public void testInit() {
-    //do nothing, the logic is in setUp and tearDown methods
+    //do nothing, test the logic is in setUp and tearDown methods
   }
 
   @Test

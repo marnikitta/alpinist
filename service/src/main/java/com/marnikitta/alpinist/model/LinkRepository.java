@@ -30,9 +30,8 @@ public interface LinkRepository {
    * Deletes link by its name
    *
    * @param name name of the link to delete
-   * @throws java.util.NoSuchElementException if link with name doesn't exists
    */
-  void delete(String name);
+  boolean delete(String name);
 
   /**
    * Updates link by its name

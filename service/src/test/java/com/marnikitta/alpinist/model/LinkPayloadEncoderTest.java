@@ -13,4 +13,14 @@ public class LinkPayloadEncoderTest {
 
     Assert.assertEquals(actual, expected);
   }
+
+  @Test(invocationCount = 1000)
+  public void testRandomDecodeEncode() {
+    final LinkEncoder encoder = new LinkEncoder();
+    final String expected = encoder.encode(new LinkGenerator().get());
+    System.out.println(expected);
+    final String actual = encoder.encode(encoder.decode(expected));
+
+    Assert.assertEquals(actual, expected);
+  }
 }

@@ -1,9 +1,9 @@
 package com.marnikitta.alpinist.service.api;
 
-public class Exists {
+public class GetSpace {
   private final String name;
 
-  public Exists(String name) {
+  public GetSpace(String name) {
     this.name = name;
   }
 

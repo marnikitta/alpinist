@@ -12,14 +12,9 @@ public class PageRenderer {
   }
 
   public String render(String body) {
-    return render(body, "");
-  }
-
-  public String render(String body, String title) {
     final Map<String, String> vars = new HashMap<>();
     vars.put("prefix", prefix);
     vars.put("body", body);
-    vars.put("topic", title);
     return pageTemplate.render(vars);
   }
 }

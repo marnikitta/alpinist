@@ -14,7 +14,7 @@ public class CachingLinkRepository implements LinkRepository {
 
   private boolean active = false;
 
-  CachingLinkRepository(LinkRepository inner) {
+  public CachingLinkRepository(LinkRepository inner) {
     this.inner = inner;
   }
 
@@ -43,12 +43,15 @@ public class CachingLinkRepository implements LinkRepository {
   }
 
   @Override
-  public void delete(String name) {
+  public boolean delete(String name) {
     if (!active) {
       invalidateAndPopulate();
     }
-    inner.delete(name);
-    cache.remove(name);
+    final boolean result = inner.delete(name);
+    if (result) {
+      cache.remove(name);
+    }
+    return result;
   }
 
   @Override

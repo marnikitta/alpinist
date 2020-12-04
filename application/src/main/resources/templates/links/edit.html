@@ -1,18 +1,14 @@
-<div class="link">
+<article class="space space-edit">
     <form method="post">
-        <article>
-            <h1>
-                <a href="${url}">${title}</a>
-            </h1>
-            <div class="link-actions ${hidden}">
+        <div class="space-header">
+            <input type="text" name="title" placeholder="Title" value="${title}" class="link-title"/>
+            <input type="text" name="url" placeholder="Url" value="${url}" class="link-url"/>
+            <input type="text" name="name" placeholder="name" value="${name}" class="link-name hidden"/>
+            <div class="space-actions">
                 <button type="submit">Save</button>
             </div>
-            <div class="discussion">
-                <textarea rows="20" name="discussion">${discussion}</textarea>
-            </div>
-            <div class="link-tags">
-                <input autocomplete="off" type="text" name="tags" value="${tags}">
-            </div>
-        </article>
+        </div>
+        <textarea rows="20" placeholder="What are you thinking about?" name="discussion"
+                  class="discussion discussion-edit" contenteditable="true">${discussion}</textarea>
     </form>
-</div>
+</article>

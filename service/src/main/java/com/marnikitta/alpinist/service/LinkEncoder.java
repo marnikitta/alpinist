@@ -2,13 +2,11 @@ package com.marnikitta.alpinist.service;
 
 import com.marnikitta.alpinist.model.LinkPayload;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class LinkEncoder {
   private static final Pattern URL_TITLE = Pattern.compile(
@@ -17,12 +15,12 @@ public class LinkEncoder {
   private static final Pattern TITLE = Pattern.compile(
     "# (?<title>\\p{Print}+)\n"
   );
-  private static final Pattern TAGS = Pattern.compile("(__Tags:__ (?<tags>\\p{Print}+)\n)?");
+  private static final Pattern UPDATED = Pattern.compile("(__Updated:__ (?<datetime>[\\p{Digit}T.\\-:]+)\n)?");
   private static final Pattern DISCUSSION = Pattern.compile("(?<discussion>[\\p{Print}\n]*)");
   @SuppressWarnings("RegExpDuplicateAlternationBranch")
   private static final Pattern LINK = Pattern.compile(
     "^((" + URL_TITLE.pattern() + ")|(" + TITLE.pattern() + "))\n*" +
-      TAGS.pattern() + "\n*" +
+      UPDATED.pattern() + "\n*" +
       DISCUSSION.pattern() + '$', Pattern.UNICODE_CHARACTER_CLASS
   );
 
@@ -33,11 +31,13 @@ public class LinkEncoder {
     } else {
       sb.append(String.format("# [%s](%s)\n", linkPayload.title(), linkPayload.url()));
     }
-    final Set<String> tags = linkPayload.tags().collect(Collectors.toSet());
-    if (!tags.isEmpty()) {
-      sb.append(tags.stream().collect(Collectors.joining(", ", "\n__Tags:__ ", "\n")));
-    }
-    sb.append('\n').append(linkPayload.discussion());
+
+    linkPayload.updated().ifPresent(updated -> {
+      final String dateString = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(updated);
+      sb.append("\n__Updated:__ ").append(dateString).append("\n");
+    });
+
+    sb.append('\n').append(linkPayload.rawDiscussion());
 
     return sb.toString();
   }
@@ -54,12 +54,12 @@ public class LinkEncoder {
         title = matcher.group("urltitle");
         url = matcher.group("url");
       }
-      final Set<String> tags = Optional.ofNullable(matcher.group("tags"))
-        .map(t -> Arrays.stream(t.split(",")).map(String::trim).collect(Collectors.toSet()))
-        .orElse(Collections.emptySet());
-
       final String discussion = matcher.group("discussion");
-      return new LinkPayload(title, url, tags, discussion);
+
+      final LocalDateTime updated = Optional.ofNullable(matcher.group("datetime"))
+        .map(t -> LocalDateTime.parse(t, DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+        .orElse(null);
+      return new LinkPayload(title, url, discussion, updated);
     } else {
       throw new IllegalArgumentException("String can't be parsed");
     }

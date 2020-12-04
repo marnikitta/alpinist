@@ -13,14 +13,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-class GitClient {
+public class GitClient {
   private static final String GIT_PATH = "/usr/bin/git";
   private final Runtime runtime = Runtime.getRuntime();
   private final Logger log = LoggerFactory.getLogger(GitClient.class);
   private final Path baseDir;
   private boolean hasRemote = false;
 
-  GitClient(Path baseDir) {
+  public GitClient(Path baseDir) {
     this.baseDir = baseDir;
   }
 
@@ -51,19 +51,6 @@ class GitClient {
     git("add", "--all");
     git("commit", "-m", message);
   }
-
-  Instant createTime(Path path) {
-    final String[] split = git("log", "-1", "--format=%aI", "--reverse", "--", path.toString()).split("\n");
-    final String created = split[split.length - 1];
-    return DateTimeFormatter.ISO_ZONED_DATE_TIME.parse(created, Instant::from);
-  }
-
-  Instant updateTime(Path path) {
-    final String[] split = git("log", "-1", "--format=%aI", "--", path.toString()).split("\n");
-    final String created = split[0];
-    return DateTimeFormatter.ISO_ZONED_DATE_TIME.parse(created, Instant::from);
-  }
-
   public void push() {
     git("push", "origin", "master:master");
   }

@@ -6,14 +6,11 @@ import akka.actor.Props;
 import akka.actor.Status;
 import akka.japi.pf.ReceiveBuilder;
 import akka.pattern.PatternsCS;
-import com.google.common.collect.Sets;
-import com.marnikitta.alpinist.model.CommonTags;
 import com.marnikitta.alpinist.model.Link;
 import com.marnikitta.alpinist.model.LinkPayload;
 import com.marnikitta.alpinist.preview.LinkPreviewService;
 import com.marnikitta.alpinist.preview.Preview;
 import com.marnikitta.alpinist.service.api.CreateLink;
-import com.marnikitta.alpinist.service.api.Exists;
 import com.marnikitta.alpinist.service.api.GetLink;
 import com.marnikitta.alpinist.service.api.UpdatePayload;
 
@@ -21,12 +18,10 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
-import java.util.Set;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class QuickService extends AbstractActor {
-  private static final Set<String> LINK_TAGS = Sets.newHashSet(CommonTags.LINK, CommonTags.UNREAD);
-  private static final Set<String> NOTE_TAGS = Sets.newHashSet(CommonTags.LOGBOOK);
-
   private final ActorRef linkService;
   private final ActorRef previewService;
 
@@ -49,19 +44,22 @@ public class QuickService extends AbstractActor {
 
   private void handleNote(QuickNote note, ActorRef sender) {
     final LocalDate date = LocalDate.now(ZoneOffset.ofHours(3));
-    final DateTimeFormatter pattern =  DateTimeFormatter.ofPattern("yyyy-'W'ww");
+    final DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-'W'ww");
     final String formattedDate = date.format(pattern);
     final String logBookId = "lb-" + formattedDate;
 
-    PatternsCS.ask(linkService, new Exists(logBookId), 10000)
-      .thenApply(flag -> (boolean) flag)
-      .thenCompose(f -> {
-        if (f) {
-          return PatternsCS.ask(linkService, new GetLink(logBookId), 10000);
+    PatternsCS.ask(linkService, new GetLink(logBookId), 10000)
+      .thenApply(l -> (Optional<Link>) l)
+      .thenCompose(l -> {
+        if (l.isPresent()) {
+          return CompletableFuture.completedFuture(l.get());
         } else {
           return PatternsCS.ask(
             linkService,
-            new CreateLink(logBookId, new LinkPayload(formattedDate, NOTE_TAGS, "")),
+            new CreateLink(
+              logBookId,
+              new LinkPayload(formattedDate, "", "[[logbook]]")
+            ),
             10000
           );
         }
@@ -88,7 +86,7 @@ public class QuickService extends AbstractActor {
     PatternsCS.ask(previewService, url, 10000).thenApply(p -> (Preview) p)
       .exceptionally(throwable -> new Preview(url, url))
       .thenAccept(p -> {
-        final LinkPayload payload = new LinkPayload(p.title(), url, LINK_TAGS, "");
+        final LinkPayload payload = new LinkPayload(p.title(), url, "");
         createLink(Link.filefy(payload.title()), payload, sender);
       });
   }

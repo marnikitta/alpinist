@@ -133,9 +133,8 @@ public class LinkRepositoryTest {
     Assert.assertEquals(writerLinkRepository.links().count(), 0);
   }
 
-  @Test(expectedExceptions = NoSuchElementException.class)
   public void testDeleteNonExisting() {
-    writerLinkRepository.delete("random-name");
+    Assert.assertFalse(writerLinkRepository.delete("random-name"));
   }
 
   @Test(expectedExceptions = NoSuchElementException.class)

@@ -34,14 +34,14 @@ create_ghost_file() {
 lb() {
   local file_date=$(date +'%Y-W%V')
   cd ${WIKI_BASE}
-  create_ghost_file "${WIKI_BASE}/logbook/lb-${file_date}.md" "# ${file_date}\\n\\n__Tags:__ logbook\\n"
+  create_ghost_file "${WIKI_BASE}/logbook/${file_date}.md" "# ${file_date}\\n\\n[[logbook]]\\n"
   cd -
 }
 
 lbt() {
   local file_date=$(date +'%F')
   cd ${WIKI_BASE}
-  create_ghost_file "${WIKI_BASE}/logbook/lb-${file_date}.md" "# ${file_date}\\n\\n__Tags:__ logbook\\n"
+  create_ghost_file "${WIKI_BASE}/logbook/${file_date}.md" "# ${file_date}\\n\\n[[logbook]]\\n"
   cd -
 }
 
@@ -54,18 +54,7 @@ li() {
   local url=$2
   local file_name=$(filefy "$title")
 
-  create_ghost_file "${WIKI_BASE}/link/${file_name}.md" "# [${title}](${url})\\n\\n__Tags:__ link, unread\\n"
-}
-
-space() {
-  if [[ $# -ne 1 ]]; then
-    echo "Usage: space <name>"
-    return 1
-  fi
-  local title=$1
-  local file_name=$(filefy "$title")
-
-  create_ghost_file "${WIKI_BASE}/space/${file_name}.md" "# ${title}\\n\\n__Tags:__ space, ${title}\\n"
+  create_ghost_file "${WIKI_BASE}/link/${file_name}.md" "# [${title}](${url})\\n"
 }
 
 note() {
@@ -76,5 +65,5 @@ note() {
   local title=$1
   local file_name=$(filefy "$title")
 
-  create_ghost_file "${WIKI_BASE}/note/${file_name}.md" "# ${title}\\n\\n__Tags:__ note\\n"
+  create_ghost_file "${WIKI_BASE}/note/${file_name}.md" "# ${title}\\n"
 }

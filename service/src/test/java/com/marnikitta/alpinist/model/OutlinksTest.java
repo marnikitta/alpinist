@@ -27,4 +27,15 @@ public class OutlinksTest {
       "[[[outlink1]]](alpinist.com/outlink1), [[[outlink2]]](alpinist.com/outlink2)"
     );
   }
+
+  @Test
+  public void testRussianLinks() {
+    final String outlink = "школа_дизайнеров_бюро_горбунова";
+    final LinkPayload payload = new LinkPayload("a", "", "[[" + outlink + "]]");
+    final String renderedPayload = payload.renderedDiscussion("alpinist.com/");
+    Assert.assertEquals(
+      renderedPayload,
+      "[[[" + outlink + "]]](alpinist.com/" + outlink + ")"
+    );
+  }
 }

@@ -25,7 +25,8 @@ public class LinkPayload implements Comparable<LinkPayload> {
   private final Set<String> outlinks;
 
   public static final Pattern OUTLINK_PATTERN = Pattern.compile(
-    "\\[\\[(?<outlink>[\\p{Lower}\\p{Digit}_\\-]+)]]"
+    "\\[\\[(?<outlink>[\\p{Lower}\\p{Digit}_\\-]+)]]",
+    Pattern.UNICODE_CHARACTER_CLASS
   );
 
   public LinkPayload(String title,

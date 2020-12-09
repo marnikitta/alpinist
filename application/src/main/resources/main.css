@@ -143,9 +143,10 @@ header li a:hover {
 .incoming-link {
     padding-bottom: 30px;
     padding-top: 15px;
+    /*
     border-style: none none solid none;
     border-color: #e6e6e6;
-    border-width: 1px;
+    border-width: 1px;*/
 }
 
 .discussion {

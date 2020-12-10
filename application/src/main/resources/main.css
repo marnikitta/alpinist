@@ -163,11 +163,23 @@ header li a:hover {
 }
 
 .space-edit input[type=text] {
-    border: none;
     width: 100%;
     box-sizing: border-box;
     margin-top: 10px;
     margin-bottom: 10px;
+    border-style: none none solid none;
+    border-color: #e6e6e6;
+    border-width: 1px;
+}
+
+.space-edit input[type=text]:focus {
+    outline-width: 0;
+    outline:none;
+}
+
+.discussion-edit:focus {
+    outline-width: 0;
+    outline:none;
 }
 
 .discussion-edit {

@@ -39,8 +39,8 @@ public class LinkService extends AbstractActor {
   }
 
   private LinkService(Path baseDir) {
-    this.linkRepository = new CachingLinkRepository(GitLinkRepository.createFromDirectory(baseDir));
-    //this.linkRepository = new CachingLinkRepository(new FileLinkRepository(baseDir));
+    //this.linkRepository = new CachingLinkRepository(GitLinkRepository.createFromDirectory(baseDir));
+    this.linkRepository = new CachingLinkRepository(new FileLinkRepository(baseDir));
   }
 
   private LinkService(LinkRepository linkRepository) {

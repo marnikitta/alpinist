@@ -1,17 +1,23 @@
 <article class="space">
-    <div class="space-header">
-        <div class="space-title-block">
-            <div class="space-title link-title">
-                ${title}
-                <a href="${url}" class="${hidden} emoji-link">🔗</a>
+    <div class="space-header-container">
+        <div class="space-header">
+            <div class="space-title-container">
+                <div class="space-title link-title">
+                    ${title}
+                    <a href="${url}" class="${hidden} emoji-link">🔗</a>
+                </div>
             </div>
+            <div class="space-actions">${actions}</div>
         </div>
-        <div class="space-actions">${actions}</div>
     </div>
-    <div class="discussion space-body">
-        ${discussion}
+    <div class="space-body-container">
+        <div class="discussion space-body">
+            ${discussion}
+        </div>
     </div>
-    <div class="incoming-links">
-        ${incoming-links}
+    <div class="incoming-links-container">
+        <div class="incoming-links">
+            ${incoming-links}
+        </div>
     </div>
 </article>

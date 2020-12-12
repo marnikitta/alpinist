@@ -14,22 +14,25 @@
 </head>
 
 <body>
-<header class="globalwidth">
-    <nav class="header-navigation">
-        <a href="${prefix}" class="header-item" id="home">🏔 Alpinist</a>
-        <a href="${prefix}/links/golden" class="header-item">Golden</a>
-        <a href="${prefix}/links/golden" class="header-item">Golden2</a>
-    </nav>
+<header class="header-container">
+    <div class="header">
+        <nav class="navigation">
+            <a href="${prefix}/" class="header-link" id="home">Alpinist</a>
+            <ul class="quick-links">
+                <li class="quick-link"><a href="${prefix}/links/golden" class="header-link">Golden</a></li>
+                <li class="quick-link"><a href="${prefix}/links/golden" class="header-link">Golden2</a></li>
+            </ul>
+        </nav>
+    </div>
 </header>
-
-<div class="alpinist-body globalwidth">
-    ${body}
-</div>
-
-<footer class="globalwidth">
-    <form action="${prefix}/sync" method="post">
-        <button type="submit">Sync</button>
-    </form>
+${body}
+<footer class="footer-container">
+    <div class="footer">
+        <form action="${prefix}/sync" method="post">
+            <button type="submit">Sync</button>
+        </form>
+    </div>
 </footer>
+
 </body>
 </html>

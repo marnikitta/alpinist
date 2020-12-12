@@ -1,10 +1,5 @@
-a:link {
+a {
     color: #000000;
-}
-
-a:visited {
-    color: #000000;
-    
 }
 
 a:hover {
@@ -23,50 +18,32 @@ button:hover {
     background: #0a8c20;
 }
 
-body {
-    min-width: 400px;
-    max-width: 800px;
-    padding: 10px;
-    font-size: 17px;
-    margin: auto;
-    font-family: 'Open Sans', sans-serif;
+.globalwidth {
+    width: 800px;
+    margin: 0 auto;
+    position: relative;
+    padding-left: 10px;
+    padding-right: 10px;
+    overflow: hidden;
 }
 
-header {
-    left: 0;
-    margin-bottom: 0px;
-}
+/* Header */
 
-header nav {
+.header-navigation {
     display: inline-block;
-}
-
-header ul {
-    margin: 0px 0px 4px 0;
-    display: inline-block;
-    padding-left: 0;
-    list-style-type: none;
     border-style: none none solid none;
     border-color: #0a8c20;
     border-width: 1px;
+
+    margin-bottom: 40px;
 }
 
-header ul li {
+.header-item {
     margin: 0 4px;
-    display: inline-block;
-}
-
-header li a:link {
-    color: #0a8c20;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 17px;
     text-decoration: none;
-}
-
-header li a:visited {
     color: #0a8c20;
-}
-
-header li a:hover {
-    color: #ff7600;
 }
 
 #home {
@@ -74,13 +51,62 @@ header li a:hover {
     margin-right: 20px;
 }
 
+/* Space */
+
+.space {
+    margin-bottom: 40px;
+}
+
 .space-header {
-    margin-bottom: 30px  
+    margin-bottom: 30px
+}
+
+.space-title-block {
+    display: inline-block;
+    width: 650px;
+}
+
+.space-title::first-line {
+    font-size: 96px;
+}
+
+.space-actions {
+    display: inline-block;
+    float: right;
+}
+
+.action {
+    display: inline-block;
+}
+
+.action-button {
+    background: none;
+    border: none;
+    text-decoration: underline;
+    cursor: pointer;
+    color: #0a8c20;
+}
+
+.action-button:hover {
+    color: #ff7600;
+    background: none;
+}
+
+.space-body {
+    padding-bottom: 60px;
+    border-style: none none solid none;
+    border-color: #e6e6e6;
+    border-width: 1px;
+}
+
+/* Link */
+
+.incoming-link {
+    padding-bottom: 20px;
+    padding-top: 10px;
 }
 
 .link-title {
-    max-width: 840px;
-    display: inline-block;
     font-weight: bold;
     font-size: 28px;
     font-family: 'Lato', sans-serif;
@@ -96,62 +122,12 @@ header li a:hover {
     font-family: monospace;
 }
 
-.space-title {
-    font-family: 'Open Sans', sans-serif;
-
-}
-
-.space {
-    padding-top: 40px;
-    margin-bottom: 40px; 
-
-}
-
-.space-title::first-line {
-    font-size: 96px;
-}
-
-.pretty-link {
+.emoji-link {
     text-decoration: none;
-}
-
-.space-actions {
-    display: inline-block;
-    float: right;
-}
-
-.space-actions button {
-    background: none;
-    border: none;
-    text-decoration: underline;
-    cursor: pointer;
-    color: #0a8c20;
-}
-
-.space-actions button:visited {
-    color: #0a8c20;
-}
-
-.space-actions button:hover {
-    color: #ff7600;
-}
-
-.space-actions form {
-    display: inline;
-}
-
-.incoming-link {
-    padding-bottom: 30px;
-    padding-top: 15px;
-    /*
-    border-style: none none solid none;
-    border-color: #e6e6e6;
-    border-width: 1px;*/
 }
 
 .discussion {
     font-size: 17px;
-    max-width: 840px;
     font-family: 'Open Sans', sans-serif;
     overflow-wrap: break-word;
     line-height: 1.45;
@@ -162,7 +138,9 @@ header li a:hover {
     margin-bottom: 5px;
 }
 
-.space-edit input[type=text] {
+/* Edit */
+
+.lined-input {
     width: 100%;
     box-sizing: border-box;
     margin-top: 10px;
@@ -172,14 +150,9 @@ header li a:hover {
     border-width: 1px;
 }
 
-.space-edit input[type=text]:focus {
+.lined-input:focus {
     outline-width: 0;
-    outline:none;
-}
-
-.discussion-edit:focus {
-    outline-width: 0;
-    outline:none;
+    outline: none;
 }
 
 .discussion-edit {
@@ -187,20 +160,15 @@ header li a:hover {
     width: 100%;
     border: 0px;
     vertical-align: top;
-    min-height:50px;
-    height:auto;
+    min-height: 50px;
+    height: auto;
+}
+
+.discussion-edit:focus {
+    outline-width: 0;
+    outline: none;
 }
 
 .hidden {
     display: none;
 }
-
-
-/* div {
-    border:1px solid black
-}
-
-article {
-    border:1px solid black;
-}
-     */

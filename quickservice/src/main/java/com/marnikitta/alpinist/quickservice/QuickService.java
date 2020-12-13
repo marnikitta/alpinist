@@ -11,15 +11,6 @@ import com.marnikitta.alpinist.model.LinkPayload;
 import com.marnikitta.alpinist.preview.LinkPreviewService;
 import com.marnikitta.alpinist.preview.Preview;
 import com.marnikitta.alpinist.service.api.CreateLink;
-import com.marnikitta.alpinist.service.api.GetLink;
-import com.marnikitta.alpinist.service.api.UpdatePayload;
-
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 public class QuickService extends AbstractActor {
   private final ActorRef linkService;
@@ -38,48 +29,7 @@ public class QuickService extends AbstractActor {
   public Receive createReceive() {
     return ReceiveBuilder.create()
       .match(QuickLink.class, link -> handleUrl(link.url, sender()))
-      .match(QuickNote.class, note -> handleNote(note, sender()))
       .build();
-  }
-
-  private void handleNote(QuickNote note, ActorRef sender) {
-    final LocalDate date = LocalDate.now(ZoneOffset.ofHours(3));
-    final DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-'W'ww");
-    final String formattedDate = date.format(pattern);
-    final String logBookId = "lb-" + formattedDate;
-
-    PatternsCS.ask(linkService, new GetLink(logBookId), 10000)
-      .thenApply(l -> (Optional<Link>) l)
-      .thenCompose(l -> {
-        if (l.isPresent()) {
-          return CompletableFuture.completedFuture(l.get());
-        } else {
-          return PatternsCS.ask(
-            linkService,
-            new CreateLink(
-              logBookId,
-              new LinkPayload(formattedDate, "", "[[logbook]]")
-            ),
-            10000
-          );
-        }
-      })
-      .thenApply(l -> (Link) l)
-      .thenCompose(link -> {
-        final LinkPayload updated = link.payload().withLines(Collections.singletonList(note.body));
-        return PatternsCS.ask(linkService, new UpdatePayload(link.name(), updated), 10000);
-      })
-      .whenComplete((v, error) -> {
-        if (error != null) {
-          sender.tell(new Status.Failure(error), self());
-          return;
-        }
-
-        if (v != null) {
-          sender.tell(v, self());
-          return;
-        }
-      });
   }
 
   private void handleUrl(String url, ActorRef sender) {
@@ -112,14 +62,6 @@ public class QuickService extends AbstractActor {
 
     public QuickLink(String url) {
       this.url = url;
-    }
-  }
-
-  public static class QuickNote {
-    public final String body;
-
-    public QuickNote(String body) {
-      this.body = body;
     }
   }
 }

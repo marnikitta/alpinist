@@ -79,21 +79,12 @@ public class TelegramService extends AbstractActor {
                 }
               }
             }
-            if (message.getText() != null) {
-              handleNote(message.getText());
-            }
           } else {
             log.warn("Illegal access");
           }
         }
       })
       .build();
-  }
-
-  private void handleNote(String text) {
-    PatternsCS.ask(quickService, new QuickService.QuickNote(text), 10000)
-      .thenApply(link -> (Link) link)
-      .whenComplete(this::onLinkComplete);
   }
 
   private void handleUrl(String url) {

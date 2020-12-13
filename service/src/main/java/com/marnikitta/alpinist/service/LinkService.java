@@ -100,19 +100,11 @@ public class LinkService extends AbstractActor {
         }
       })
       .match(DeleteLink.class, delete -> {
-        try {
-          linkRepository.delete(delete.name());
-          sender().tell(new Success(delete.name()), self());
-        } catch (NoSuchElementException e) {
-          sender().tell(new Failure(e), self());
-        }
+        linkRepository.delete(delete.name());
+        sender().tell(new Success(delete.name()), self());
       })
       .match(GetLink.class, getLink -> {
-        try {
-          sender().tell(link(getLink.name()), self());
-        } catch (NoSuchElementException e) {
-          sender().tell(new Failure(e), self());
-        }
+        sender().tell(link(getLink.name()), self());
       })
       .match(GetSpace.class, getSpace -> {
         if (getSpace.name().equals("recent")) {

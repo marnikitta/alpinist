@@ -27,12 +27,12 @@ button:hover {
 .header-container, .space-header-container, .space-body-container, .incoming-links-container, .footer-container {
     display: flex;
     justify-content: center;
+    padding: 5px;
 }
 
 .header, .space-header, .space-body, .incoming-links, .footer {
     width: 1000px;
     overflow: hidden;
-    padding: 0, 10px;
 }
 
 /* Header */
@@ -40,7 +40,6 @@ button:hover {
     display: flex;
     justify-content: flex-start;
     margin-bottom: 40px;
-    margin-top: 5px;
 }
 
 .navigation {
@@ -86,10 +85,10 @@ button:hover {
 }
 
 .space-header-container {
-    margin-top: -75px;
+    margin-top: -80px;
     margin-bottom: 30px;
     padding-top: 40px;
-    padding-bottom: 150px;
+    padding-bottom: 30px;
 }
 
 .space-header {
@@ -99,7 +98,7 @@ button:hover {
 }
 
 .space-title-container {
-    min-width: 650px;
+    max-width: 650px;
 }
 
 .space-title {
@@ -134,9 +133,9 @@ button:hover {
 
 .space-body {
     padding-bottom: 60px;
-    border-style: none none solid none;
+/*     border-style: none none solid none;
     border-color: #e6e6e6;
-    border-width: 1px;
+    border-width: 1px; */
 }
 
 /* Link */
@@ -149,6 +148,7 @@ button:hover {
     font-weight: bold;
     font-size: 28px;
     font-family: 'Lato', sans-serif;
+    word-break: break-word;
 }
 
 .link-url {
@@ -178,12 +178,14 @@ button:hover {
 
 /* Edit */
 .lined-input {
+    background: none;
     width: 100%;
-    box-sizing: border-box;
-    margin-top: 10px;
+    margin: 10px 0;
+    color: white;
     margin-bottom: 10px;
     border-style: none none solid none;
-    border-color: #e6e6e6;
+    
+    border-bottom: 1px solid rgba(255, 255, 255, .3);;
     border-width: 1px;
 }
 
@@ -199,6 +201,11 @@ button:hover {
     vertical-align: top;
     min-height: 50px;
     height: auto;
+    background-image: linear-gradient(#eee 1px,transparent 1px);
+    
+    font-size: 18px;
+    line-height: 1.5;
+    background-size: 100% 27px;
 }
 
 .discussion-edit:focus {

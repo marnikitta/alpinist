@@ -1,7 +1,7 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap'); * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 a {
@@ -62,13 +62,12 @@ button:hover {
 
 .header-link {
     margin: 0 5px;
-    
     font-family: 'Open Sans', sans-serif;
+    font-weight: lighter;
     font-size: 17px;
     text-decoration: none;
     color: white;
- 
-    border-bottom: 1px solid  rgba(255, 255, 255, .3);
+    border-bottom: 1px solid rgba(255, 255, 255, .3);
 }
 
 .header-link:hover {
@@ -87,7 +86,6 @@ button:hover {
 }
 
 .space-header-container {
-    background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
     margin-top: -75px;
     margin-bottom: 30px;
     padding-top: 40px;
@@ -121,14 +119,11 @@ button:hover {
     background: none;
     border: none;
     cursor: pointer;
-
     font-weight: 200;
     color: white;
-
     padding: 0px;
     margin: 10px;
-
-    border-bottom: 1px solid  rgba(255, 255, 255, .3);
+    border-bottom: 1px solid rgba(255, 255, 255, .3);
 }
 
 .space-action-button:hover {
@@ -211,6 +206,128 @@ button:hover {
     outline: none;
 }
 
+.outlink {
+    padding: 0 10px;
+    border-radius: 10px;
+    color: white;
+    text-decoration: none;
+    opacity: 85%;
+}
+
+.outlink:hover {
+    color: white;
+    opacity: 100%;
+}
+
+.background {
+    background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+}
+
 .hidden {
     display: none;
+}
+
+/* Backgrounds, copied from https://cssgradient.io/gradient-backgrounds */
+.background_gradient_0 {
+    background: linear-gradient( 111.6deg, rgba(174,68,223,1) 27.3%, rgba(246,135,135,1) 112.7% );
+}
+
+.background_gradient_1 {
+    background: radial-gradient( circle farthest-corner at 10% 20%, rgba(153,103,186,1) 41.2%, rgba(0,113,227,1) 90% );
+}
+
+.background_gradient_2 {
+    background: linear-gradient( 109.6deg, rgba(238,58,136,1) 11.2%, rgba(128,162,245,1) 91.1% );
+}
+
+.background_gradient_3 {
+    background: linear-gradient( 109.6deg, rgba(48,207,208,1) 11.2%, rgba(51,8,103,1) 92.5% );
+}
+
+.background_gradient_4 {
+    background: linear-gradient( 110.6deg, rgba(179,157,219,1) 7%, rgba(150,159,222,1) 47.7%, rgba(24,255,255,1) 100.6% );
+}
+
+.background_gradient_5 {
+    background: linear-gradient( 99deg, rgba(255,166,0,1) 14.7%, rgba(255,99,97,1) 73% );
+}
+
+.background_gradient_6 {
+    background: linear-gradient( 112.4deg, rgba(169,28,115,1) 21.6%, rgba(219,112,54,1) 92.2% );
+}
+
+.background_gradient_7 {
+    background: linear-gradient( 292.9deg, rgba(254,105,241,1) 28.8%, rgba(182,44,248,1) 70.4% );
+}
+
+.background_gradient_8 {
+    background: linear-gradient( 135.9deg, rgba(109,25,252,1) 16.4%, rgba(125,31,165,1) 56.1% );
+}
+
+.background_gradient_9 {
+    background: radial-gradient( circle farthest-corner at 10% 20%, rgba(255,37,174,1) 0%, rgba(241,147,55,1) 53.4%, rgba(250,237,56,1) 99.5% );
+}
+
+.background_gradient_10 {
+    background: linear-gradient( 181.3deg, rgba(134,15,15,1) 24.9%, rgba(183,10,10,1) 46.9%, rgba(210,70,0,1) 85.1% );
+}
+
+.background_gradient_11 {
+    background: linear-gradient( 112.1deg, rgba(32,38,57,1) 11.4%, rgba(63,76,119,1) 70.2% );
+}
+
+.background_gradient_12 {
+    background: linear-gradient( 109.8deg, rgba(62,5,116,1) -5.2%, rgba(41,14,151,1) -5.2%, rgba(216,68,148,1) 103.3% );
+}
+
+.background_gradient_13 {
+    background: radial-gradient( circle 590px at 8.2% 13.8%, rgba(18,35,60,1) 0%, #bbb 90% );
+}
+
+.background_gradient_14 {
+    background: linear-gradient( 78.1deg, rgba(177,14,236,1) 5.5%, rgba(255,19,15,1) 92.8% );
+}
+
+.background_gradient_15 {
+    background: radial-gradient( circle farthest-corner at 10% 20%, rgba(7,121,222,1) 0%, rgba(20,72,140,1) 90% );
+}
+
+.background_gradient_16 {
+    background: linear-gradient( 109.6deg, rgba(101,58,150,1) 29.9%, rgba(168,141,194,1) 99.9% );
+}
+
+.background_gradient_17 {
+    background: radial-gradient( circle 609.6px at 21.5% 78.8%, rgba(37,99,219,1) 0%, rgba(233,45,181,1) 89.9% );
+}
+
+.background_gradient_18 {
+    background: radial-gradient( circle farthest-corner at 10% 20%, rgba(0,52,89,1) 0%, rgba(0,168,232,1) 90% );
+}
+
+.background_gradient_19 {
+    background: radial-gradient( circle farthest-corner at -1% 57.5%, rgba(19,170,82,1) 0%, rgba(0,102,43,1) 90% );
+}
+
+.background_gradient_20 {
+    background: radial-gradient( circle farthest-corner at 50.4% 50.5%, rgba(251,32,86,1) 0%, rgba(135,2,35,1) 90% );
+}
+
+.background_gradient_21 {
+    background: linear-gradient( 109.6deg, rgba(9,9,121,1) 11.2%, rgba(144,6,161,1) 53.7%, rgba(0,212,255,1) 100.2% );
+}
+
+.background_gradient_22 {
+    background: linear-gradient( 109.6deg, rgba(33,25,180,1) 11.2%, rgba(253,29,29,1) 55.2%, rgba(252,176,69,1) 91.1% );
+}
+
+.background_gradient_23 {
+    background: linear-gradient( 171.8deg, rgba(5,111,146,1) 13.5%, rgba(6,57,84,1) 78.6% );
+}
+
+.background_gradient_24 {
+    background: linear-gradient(to right, #ad5389, #3c1053);
+}
+
+.background_gradient_25 {
+    background: radial-gradient( circle farthest-corner at 10% 20%, rgba(90,92,106,1) 0%, rgba(32,45,58,1) 81.3% );
 }

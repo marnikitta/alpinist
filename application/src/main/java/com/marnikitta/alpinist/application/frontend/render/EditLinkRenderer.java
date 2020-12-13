@@ -18,7 +18,8 @@ public class EditLinkRenderer {
       "title", link.payload().title(),
       "url", link.payload().url(),
       "discussion", link.payload().rawDiscussion(),
-      "prefix", this.prefix
+      "prefix", this.prefix,
+      "background", SpaceRenderer.linkBackground(link.name())
     );
 
     return editLinkTemplate.render(vars);

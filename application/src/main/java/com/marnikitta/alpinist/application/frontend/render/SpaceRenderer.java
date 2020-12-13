@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SpaceRenderer {
+  private final static int GRADIENTS_COUNT = 25;
   private final String prefix;
   private final IncomingLinkRenderer incomingLinkRenderer;
 
@@ -41,6 +42,9 @@ public class SpaceRenderer {
     vars.put("hidden", "hidden");
     vars.put("discussion", "");
 
+    final String background = linkBackground(space.name());
+    vars.put("background", background);
+
     if (space.link().isPresent()) {
       final LinkPayload payload = space.link().get().payload();
       fillPayloadMap(this.prefix, payload, vars);
@@ -64,7 +68,10 @@ public class SpaceRenderer {
       vars.put("url", payload.url());
       vars.put("hidden", "");
     }
-    vars.put("discussion", renderMd(payload.renderedDiscussion(prefix + "/links/")));
+
+    final String outlinkPrefix = prefix + "/links/";
+    final String outlinkPattern = "<a href=\"" + outlinkPrefix + "%s\" class=\"%s outlink\">%s</a>";
+    vars.put("discussion", renderMd(payload.renderedDiscussion(o -> String.format(outlinkPattern, o, linkBackground(o), o))));
   }
 
   private String renderActions(String linkName) {
@@ -91,5 +98,10 @@ public class SpaceRenderer {
   public static String renderMd(String md) {
     final Node document = parser.parse(md);
     return renderer.render(document);
+  }
+
+  public static String linkBackground(String name) {
+    final int gradId = Math.abs(name.hashCode()) % SpaceRenderer.GRADIENTS_COUNT;
+    return "background_gradient_" + gradId;
   }
 }

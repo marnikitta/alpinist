@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -75,13 +76,15 @@ public class LinkPayload implements Comparable<LinkPayload> {
   }
 
   public String renderedDiscussion(String prefix) {
+    return renderedDiscussion(outlink -> "[[[" + outlink + "]]](" + prefix + outlink + ")");
+  }
+
+  public String renderedDiscussion(Function<String, String> linksReplacer) {
     final List<String> outlinks = this.outlinks().collect(Collectors.toList());
 
     String result = discussion;
     for (String outlink : outlinks) {
-      final String intextOutlink = "[[" + outlink + "]]";
-      final String renderedOutlink = "[[[" + outlink + "]]](" + prefix + outlink + ")";
-      result = result.replace(intextOutlink, renderedOutlink);
+      result = result.replace("[[" + outlink + "]]", linksReplacer.apply(outlink));
     }
 
     return result;

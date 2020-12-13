@@ -33,7 +33,7 @@ button:hover {
 }
 
 .header, .space-header, .space-body, .incoming-links, .footer {
-    width: 1000px;
+    width: 1200px;
     overflow: hidden;
 }
 
@@ -63,6 +63,8 @@ button:hover {
 
 .header-link {
     margin: 0 5px;
+    padding: 0;
+    background: none;
     font-family: 'Open Sans', sans-serif;
     font-weight: lighter;
     font-size: 17px;
@@ -73,6 +75,7 @@ button:hover {
 
 .header-link:hover {
     color: white;
+    background: none;
     border-color: rgba(255, 255, 255);
 }
 
@@ -102,13 +105,11 @@ button:hover {
 }
 
 .space-title-container {
-    max-width: 650px;
+    padding-bottom: 120px;
 }
 
 .space-title {
     color: white;
-
-    padding-bottom: 80px;
 }
 
 .space-title::first-line {
@@ -120,29 +121,8 @@ button:hover {
     justify-content: flex-start;
 }
 
-.space-action {
-    padding: 0px;
-    margin: 0 10px;
-}
-
 .space-action:first-of-type {
     margin-left: 0;
-}
-
-.space-action-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-weight: 200;
-    padding: 0px;
-    color: white;
-    border-bottom: 1px solid rgba(255, 255, 255, .3);
-}
-
-.space-action-button:hover {
-    color: white;
-    background: none;
-    border-color: rgba(255, 255, 255)
 }
 
 .space-body {
@@ -159,10 +139,10 @@ button:hover {
 }
 
 .link-title {
-    font-weight: 600;
+    font-weight: 700;
     font-size: 28px;
     font-family: 'Open Sans', sans-serif;
-    word-break: break-word;
+/*     word-break: break-word; */
 }
 
 .link-url {

@@ -86,16 +86,17 @@ button:hover {
 
 .space-header-container {
     margin-top: -80px;
-    padding-top: 40px;
-    
+    padding-top: 30px;
+
     margin-bottom: 10px;
-    padding-bottom: 20px;
+    padding-bottom: 10px;
 }
 
 .space-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    flex-direction: column;
 }
 
 .space-title-container {
@@ -104,6 +105,8 @@ button:hover {
 
 .space-title {
     color: white;
+
+    padding-bottom: 80px;
 }
 
 .space-title::first-line {
@@ -112,7 +115,16 @@ button:hover {
 
 .space-actions {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
+}
+
+.space-action {
+    padding: 0px;
+    margin: 0 10px;
+}
+
+.space-action:first-of-type {
+    margin-left: 0;
 }
 
 .space-action-button {
@@ -120,9 +132,8 @@ button:hover {
     border: none;
     cursor: pointer;
     font-weight: 200;
-    color: white;
     padding: 0px;
-    margin: 10px;
+    color: white;
     border-bottom: 1px solid rgba(255, 255, 255, .3);
 }
 
@@ -185,7 +196,7 @@ button:hover {
     color: white;
     margin-bottom: 10px;
     border-style: none none solid none;
-    
+
     border-bottom: 1px solid rgba(255, 255, 255, .3);;
     border-width: 1px;
 }
@@ -203,7 +214,7 @@ button:hover {
     min-height: 50px;
     height: auto;
     background-image: linear-gradient(#eee 1px,transparent 1px);
-    
+
     font-size: 18px;
     line-height: 1.5;
     background-size: 100% 27px;

@@ -134,15 +134,14 @@ button:hover {
 
 /* Link */
 .incoming-link {
-    padding-bottom: 20px;
-    padding-top: 10px;
+    padding-bottom: 15px;
+    padding-top: 7px;
 }
 
 .link-title {
     font-weight: 700;
-    font-size: 28px;
+    font-size: 22px;
     font-family: 'Open Sans', sans-serif;
-/*     word-break: break-word; */
 }
 
 .link-url {

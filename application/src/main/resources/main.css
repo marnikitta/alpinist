@@ -207,16 +207,8 @@ button:hover {
 }
 
 .outlink {
-    padding: 0 10px;
-    border-radius: 10px;
-    color: white;
-    text-decoration: none;
-    opacity: 85%;
-}
-
-.outlink:hover {
-    color: white;
-    opacity: 100%;
+    color: black;
+    text-decoration: underline;
 }
 
 .background {

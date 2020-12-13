@@ -50,11 +50,11 @@ public class SpaceRenderer {
       fillPayloadMap(this.prefix, payload, vars);
     }
 
-    final StringBuilder incommingLinks = new StringBuilder();
+    final StringBuilder incomingLinks = new StringBuilder();
     for (Link incommingLink : space.incommingLinks()) {
-      incommingLinks.append(incomingLinkRenderer.render(incommingLink));
+      incomingLinks.append(incomingLinkRenderer.render(incommingLink));
     }
-    vars.put("incoming-links", incommingLinks.toString());
+    vars.put("incoming-links", incomingLinks.toString());
 
     return spaceTemplate.render(vars);
   }
@@ -70,8 +70,8 @@ public class SpaceRenderer {
     }
 
     final String outlinkPrefix = prefix + "/links/";
-    final String outlinkPattern = "<a href=\"" + outlinkPrefix + "%s\" class=\"%s outlink\">%s</a>";
-    vars.put("discussion", renderMd(payload.renderedDiscussion(o -> String.format(outlinkPattern, o, linkBackground(o), o))));
+    final String outlinkPattern = "<a href=\"" + outlinkPrefix + "%s\" class=\"outlink\">[[%s]]</a>";
+    vars.put("discussion", renderMd(payload.renderedDiscussion(o -> String.format(outlinkPattern, o, o))));
   }
 
   private String renderActions(String linkName) {

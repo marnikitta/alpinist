@@ -45,9 +45,14 @@ public class SpaceRenderer {
     final String background = linkBackground(space.name());
     vars.put("background", background);
 
+    vars.put("discussion-hidden", "hidden");
     if (space.link().isPresent()) {
       final LinkPayload payload = space.link().get().payload();
       fillPayloadMap(this.prefix, payload, vars);
+
+      if (!payload.rawDiscussion().isEmpty()) {
+        vars.put("discussion-hidden", "");
+      }
     }
 
     final StringBuilder incomingLinks = new StringBuilder();

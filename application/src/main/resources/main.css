@@ -86,9 +86,10 @@ button:hover {
 
 .space-header-container {
     margin-top: -80px;
-    margin-bottom: 30px;
     padding-top: 40px;
-    padding-bottom: 30px;
+    
+    margin-bottom: 10px;
+    padding-bottom: 20px;
 }
 
 .space-header {
@@ -132,7 +133,7 @@ button:hover {
 }
 
 .space-body {
-    padding-bottom: 60px;
+    padding-bottom: 20px;
 /*     border-style: none none solid none;
     border-color: #e6e6e6;
     border-width: 1px; */

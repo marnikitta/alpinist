@@ -49,25 +49,8 @@ public class AlpinistFrontend extends AllDirectives {
   }
 
   public Route route() {
-    return route(
-      path("main.css", () -> getFromResource(
-        "main.css",
-        ContentTypes.create(MediaTypes.TEXT_CSS, HttpCharsets.UTF_8)
-      )),
-      path("main.js", () -> getFromResource(
-        "main.js",
-        ContentTypes.create(MediaTypes.APPLICATION_JAVASCRIPT, HttpCharsets.UTF_8)
-      )),
-      //path("main.css", () -> getFromFile(
-      //  "application/src/main/resources/main.css"
-      //)),
-      //path("main.js", () -> getFromFile(
-      //  "application/src/main/resources/main.js"
-      //)),
-      path("favicon.ico", () -> getFromResource(
-        "favicon.ico",
-        MediaTypes.IMAGE_X_ICON.toContentType()
-      )),
+    return concat(
+      pathPrefix("static", () -> getFromDirectory("static")),
       path("sync", () ->
         post(() -> complete(sync()))
       ),

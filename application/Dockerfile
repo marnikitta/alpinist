@@ -7,6 +7,7 @@ COPY entrypoint.sh /alpinist/entrypoint.sh
 COPY target/lib/*.jar /alpinist/lib/
 
 COPY target/lib/alpinist/*.jar /alpinist/lib/
+COPY static/* /alpinist/static/
 COPY target/alpinist-application-1.0-SNAPSHOT.jar /alpinist/alpinist-application-1.0-SNAPSHOT.jar
 
 WORKDIR /alpinist

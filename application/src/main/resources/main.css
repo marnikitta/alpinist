@@ -185,6 +185,11 @@ button:hover {
     border-width: 1px;
 }
 
+.lined-input::placeholder {
+    color: white;
+    opacity: 50%;
+}
+
 .lined-input:focus {
     outline-width: 0;
     outline: none;

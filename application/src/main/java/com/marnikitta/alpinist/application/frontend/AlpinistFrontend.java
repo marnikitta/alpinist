@@ -24,10 +24,16 @@ import com.marnikitta.alpinist.service.api.Sync;
 import com.marnikitta.alpinist.tg.Alert;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class AlpinistFrontend extends AllDirectives {
   private static final String PREFIX = "";
@@ -54,6 +60,12 @@ public class AlpinistFrontend extends AllDirectives {
         "main.js",
         ContentTypes.create(MediaTypes.APPLICATION_JAVASCRIPT, HttpCharsets.UTF_8)
       )),
+      //path("main.css", () -> getFromFile(
+      //  "application/src/main/resources/main.css"
+      //)),
+      //path("main.js", () -> getFromFile(
+      //  "application/src/main/resources/main.js"
+      //)),
       path("favicon.ico", () -> getFromResource(
         "favicon.ico",
         MediaTypes.IMAGE_X_ICON.toContentType()
@@ -139,14 +151,52 @@ public class AlpinistFrontend extends AllDirectives {
   }
 
   private CompletionStage<HttpResponse> renderEdit(String name) {
-    return Patterns.ask(linkService, new GetLink(name), TIMEOUT_MILLIS)
+    final CompletionStage<Link> link = Patterns.ask(linkService, new GetLink(name), TIMEOUT_MILLIS)
       .thenApply(response -> (Optional<Link>) response)
-      .thenApply(l -> l.orElse(new Link(name, new LinkPayload(name, "", ""))))
-      .thenApply(link -> renderBody(editLinkRenderer.render(link)));
+      .thenApply(l -> l.orElse(new Link(name, new LinkPayload(name, "", ""))));
+
+    final CompletionStage<List<String>> frequentOutlinks = frequentOutlinks();
+
+    return link.thenCombine(frequentOutlinks, (Link l, List<String> outlinks) -> renderBody(editLinkRenderer.render(
+      l,
+      outlinks
+      ))
+    );
   }
 
   private HttpResponse renderBody(String body) {
     return HttpResponse.create()
       .withEntity(ContentTypes.TEXT_HTML_UTF8, pageRenderer.render(body));
+  }
+
+  private CompletionStage<List<String>> frequentOutlinks() {
+    return Patterns.ask(linkService, new GetSpace("recent"), TIMEOUT_MILLIS)
+      .thenApply(s -> (LinkSpace) s)
+      .thenApply(s -> {
+        final LinkedHashSet<String> result = new LinkedHashSet<>();
+
+        final List<Link> allLinks = s.incomingLinks();
+
+        // 15 most recent outlinks
+        allLinks.stream()
+          .sorted()
+          .limit(100)
+          .flatMap(l -> l.payload().outlinks())
+          .distinct()
+          .limit(15)
+          .forEach(result::add);
+
+        // 15 most frequent outlinks
+        final Map<String, Long> outlinkFrequency = allLinks.stream().flatMap(l -> l.payload().outlinks())
+          .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        final List<Map.Entry<String, Long>> sortedValues = new ArrayList<>(outlinkFrequency.entrySet());
+        sortedValues.sort(Map.Entry.comparingByValue());
+        Collections.reverse(sortedValues);
+        final List<String> frequentOutlinks = sortedValues.stream().map(Map.Entry::getKey).collect(Collectors.toList());
+        result.addAll(frequentOutlinks.subList(0, Math.min(15, frequentOutlinks.size())));
+
+        return (List<String>) new ArrayList<>(result);
+      })
+      .exceptionally(e -> List.of());
   }
 }

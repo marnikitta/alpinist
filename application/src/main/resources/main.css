@@ -6,6 +6,11 @@
     box-sizing: border-box;
 }
 
+body {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 17px;
+}
+
 a {
     color: #000000;
 }
@@ -92,7 +97,6 @@ button:hover {
 .space-header-container {
     margin-top: -80px;
     padding-top: 40px;
-
     margin-bottom: 10px;
     padding-bottom: 10px;
 }
@@ -127,7 +131,7 @@ button:hover {
 
 .space-body {
     padding-bottom: 20px;
-/*     border-style: none none solid none;
+    /*     border-style: none none solid none;
     border-color: #e6e6e6;
     border-width: 1px; */
 }
@@ -177,8 +181,7 @@ button:hover {
     color: white;
     margin-bottom: 10px;
     border-style: none none solid none;
-
-    border-bottom: 1px solid rgba(255, 255, 255, .3);;
+    border-bottom: 1px solid rgba(255, 255, 255, .3);
     border-width: 1px;
 }
 
@@ -193,11 +196,11 @@ button:hover {
     border: 0px;
     vertical-align: top;
     height: 4.5em;
-    background-image: linear-gradient(#eee 1px,transparent 1px);
-
+    background-image: linear-gradient(to top, #eee 1px,transparent 1px);
     font-size: 18px;
     line-height: 1.5em;
     background-size: 100% 1.5em;
+    margin-bottom: 1.5em;
 }
 
 .discussion-edit:focus {
@@ -205,13 +208,36 @@ button:hover {
     outline: none;
 }
 
+.suggested-tags {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    flex-direction: row;
+    margin-left: -2px;
+    margin-right: -2px;
+}
+
+.suggested-tag {
+    position: relative;
+    padding: 0px 15px;
+    margin: 5px 2px;
+    color: white;
+    font-weight: lighter;
+    border-radius: 0.75em;
+    height: 1.5em;
+    max-width: 200px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.suggested-tag:hover {
+    cursor: pointer;
+    opacity: 90%;
+}
+
 .outlink {
     color: black;
     text-decoration: underline;
-}
-
-.background {
-    background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
 }
 
 .hidden {

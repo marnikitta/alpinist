@@ -16,5 +16,6 @@ function addOutlink(outlinkName) {
     discussionEdit.value = discussionValue
 
     autoGrowTextField(discussionEdit)
+    discussionEdit.focus()
     return false;
 }

@@ -142,6 +142,7 @@ public class FileLinkRepository implements LinkRepository {
             final String currentData = new String(Files.readAllBytes(file));
             if (raw.equals(currentData)) {
               log.warn("Update of '{}' is equal to the current data", file);
+              linkPath[0] = file;
               return FileVisitResult.TERMINATE;
             }
 

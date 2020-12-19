@@ -108,11 +108,6 @@ public class LinkPayload implements Comparable<LinkPayload> {
     return result;
   }
 
-  public LinkPayload withLines(List<String> newLines) {
-    final String newDiscussion = discussion + newLines.stream().collect(Collectors.joining("\n\n", "\n", "\n"));
-    return new LinkPayload(title, url, newDiscussion, updated);
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {

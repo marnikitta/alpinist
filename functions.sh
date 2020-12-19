@@ -67,3 +67,11 @@ note() {
 
   create_ghost_file "${WIKI_BASE}/note/${file_name}.md" "# ${title}\\n"
 }
+
+gal() {
+  grep -i -r --color $1 "$WIKI_BASE"
+}
+
+fal() {
+  find "$WIKI_BASE" -name "*$1*"
+}

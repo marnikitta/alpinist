@@ -132,8 +132,6 @@ public class LinkService extends AbstractActor {
           linkRepository.update(createOrUpdate.name, createOrUpdate.link.payload().withUpdatedNow());
         } else if (originalLink.isEmpty() && !createOrUpdate.link.payload().isEmpty()) {
           linkRepository.create(createOrUpdate.name, createOrUpdate.link.payload().withUpdatedNow());
-        } else {
-          throw new IllegalStateException();
         }
         sender().tell(true, self());
       })

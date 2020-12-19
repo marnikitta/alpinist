@@ -1,5 +1,8 @@
 window.onload = function() {
-    autoGrowTextField(document.getElementById('discussion-edit'));
+    let discussionEdit = document.getElementById('discussion-edit');
+    if (discussionEdit) {
+        autoGrowTextField(discussionEdit);
+    }
     return false;
 }
 

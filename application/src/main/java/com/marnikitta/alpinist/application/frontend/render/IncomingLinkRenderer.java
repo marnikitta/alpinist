@@ -17,6 +17,10 @@ public class IncomingLinkRenderer {
     final Map<String, String> vars = new HashMap<>();
     vars.put("prefix", this.prefix);
     vars.put("name", link.name());
+    vars.put("inplace-edit-hidden", "hidden");
+    if (link.payload().rawDiscussion().isEmpty()) {
+      vars.put("inplace-edit-hidden", "");
+    }
     SpaceRenderer.fillPayloadMap(this.prefix, link.payload(), vars);
     return linkTemplate.render(vars);
   }

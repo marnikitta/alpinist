@@ -2,7 +2,6 @@ package com.marnikitta.alpinist.application.frontend;
 
 import akka.actor.ActorRef;
 import akka.http.javadsl.model.ContentTypes;
-import akka.http.javadsl.model.HttpCharsets;
 import akka.http.javadsl.model.HttpResponse;
 import akka.http.javadsl.model.MediaTypes;
 import akka.http.javadsl.model.StatusCodes;
@@ -16,7 +15,6 @@ import com.marnikitta.alpinist.application.frontend.render.SpaceRenderer;
 import com.marnikitta.alpinist.model.Link;
 import com.marnikitta.alpinist.model.LinkPayload;
 import com.marnikitta.alpinist.service.api.CreateOrUpdate;
-import com.marnikitta.alpinist.service.api.DeleteLink;
 import com.marnikitta.alpinist.service.api.GetLink;
 import com.marnikitta.alpinist.service.api.GetSpace;
 import com.marnikitta.alpinist.service.api.LinkSpace;
@@ -79,43 +77,25 @@ public class AlpinistFrontend extends AllDirectives {
         return complete(StatusCodes.OK);
       })),
       pathPrefix("links", () -> concat(
-        pathPrefix(name -> route(
+        pathPrefix(name -> concat(
           pathEnd(() -> completeWithFuture(renderSpace(name))),
-          get(() -> path(LinkAction.EDIT.encoded, () -> completeWithFuture(renderEdit(name)))),
-          post(() -> route(
-            path(LinkAction.DELETE.encoded, () -> completeWithFuture(delete(name))),
-            path(LinkAction.EDIT.encoded, () -> formFieldMap(map -> {
-              final String title = map.get("title");
-              final String nameField = map.get("name");
-              final String url = map.get("url");
-              final String discussion = map.get("discussion");
+          get(() -> path("edit", () -> completeWithFuture(renderEdit(name))
+          )),
+          post(() -> path("edit", () -> formFieldMap(map -> {
+            final String title = map.get("title");
+            final String nameField = map.get("name");
+            final String url = map.get("url");
+            final String discussion = map.get("discussion");
 
-              if (title == null || nameField == null || url == null || discussion == null) {
-                throw new IllegalArgumentException("Expected discussion and tags params");
-              }
+            if (title == null || nameField == null || url == null || discussion == null) {
+              throw new IllegalArgumentException("Expected discussion and tags params");
+            }
 
-              return completeWithFuture(edit(name, nameField, title, url, discussion));
-            }))
-          ))
+            return completeWithFuture(edit(name, nameField, title, url, discussion));
+          })))
         ))
       ))
     );
-  }
-
-  public enum LinkAction {
-    DELETE("delete"),
-    EDIT("edit");
-
-    public final String encoded;
-
-    LinkAction(String encoded) {
-      this.encoded = encoded;
-    }
-  }
-
-  private CompletionStage<HttpResponse> delete(String name) {
-    linkService.tell(new DeleteLink(name), ActorRef.noSender());
-    return renderSpace(name);
   }
 
   private CompletionStage<HttpResponse> edit(String originalName,

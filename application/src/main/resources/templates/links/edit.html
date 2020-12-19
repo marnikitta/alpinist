@@ -17,7 +17,9 @@
         <div class="space-body-container">
             <div class="space-body">
                 <textarea rows="20" placeholder="What are you thinking about?" name="discussion"
-                          class="discussion discussion-edit" contenteditable="true">${discussion}</textarea>
+                          class="discussion discussion-edit" contenteditable="true"
+                          oninput="autoGrowTextField(this)"
+                >${discussion}</textarea>
             </div>
         </div>
     </form>

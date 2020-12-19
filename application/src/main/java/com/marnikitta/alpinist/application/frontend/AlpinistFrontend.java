@@ -50,6 +50,10 @@ public class AlpinistFrontend extends AllDirectives {
         "main.css",
         ContentTypes.create(MediaTypes.TEXT_CSS, HttpCharsets.UTF_8)
       )),
+      path("main.js", () -> getFromResource(
+        "main.js",
+        ContentTypes.create(MediaTypes.APPLICATION_JAVASCRIPT, HttpCharsets.UTF_8)
+      )),
       path("favicon.ico", () -> getFromResource(
         "favicon.ico",
         MediaTypes.IMAGE_X_ICON.toContentType()

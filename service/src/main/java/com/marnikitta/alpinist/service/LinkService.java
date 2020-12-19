@@ -110,9 +110,9 @@ public class LinkService extends AbstractActor {
         if (getSpace.name().equals("recent")) {
           sender().tell(new LinkSpace("recent", linkRepository.links().collect(Collectors.toList())), self());
         } else {
-          final List<Link> incomming = incommingLinks(getSpace.name());
-          final LinkSpace space = link(getSpace.name()).map(l -> new LinkSpace(l, incomming))
-            .orElse(new LinkSpace(getSpace.name(), incomming));
+          final List<Link> incoming = incomingLinks(getSpace.name());
+          final LinkSpace space = link(getSpace.name()).map(l -> new LinkSpace(l, incoming))
+            .orElse(new LinkSpace(getSpace.name(), incoming));
           sender().tell(space, self());
         }
       })
@@ -146,7 +146,7 @@ public class LinkService extends AbstractActor {
       .findAny();
   }
 
-  private List<Link> incommingLinks(String name) {
+  private List<Link> incomingLinks(String name) {
     return linkRepository.links().filter(l -> l.payload().hasOutlink(name)).collect(Collectors.toList());
   }
 

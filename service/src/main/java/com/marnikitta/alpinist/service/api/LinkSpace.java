@@ -3,6 +3,7 @@ package com.marnikitta.alpinist.service.api;
 import com.marnikitta.alpinist.model.Link;
 import com.sun.istack.Nullable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,18 +12,18 @@ public class LinkSpace {
 
   @Nullable
   private final Link link;
-  private final List<Link> incommingLinks;
+  private final List<Link> incomingLinks;
 
-  public LinkSpace(Link link, List<Link> incommingLinks) {
+  public LinkSpace(Link link, List<Link> incomingLinks) {
     this.name = link.name();
     this.link = link;
-    this.incommingLinks = incommingLinks;
+    this.incomingLinks = incomingLinks;
   }
 
-  public LinkSpace(String name, List<Link> incommingLinks) {
+  public LinkSpace(String name, List<Link> incomingLinks) {
     this.name = name;
     this.link = null;
-    this.incommingLinks = incommingLinks;
+    this.incomingLinks = incomingLinks;
   }
 
   public String name() {
@@ -33,7 +34,16 @@ public class LinkSpace {
     return Optional.ofNullable(this.link);
   }
 
-  public List<Link> incommingLinks() {
-    return this.incommingLinks;
+  public List<Link> incomingLinks() {
+    return this.incomingLinks;
+  }
+
+  public int incomingCount() {
+    return this.incomingLinks.size();
+  }
+
+  public Optional<LocalDateTime> lastUpdate() {
+    return this.incomingLinks.stream().flatMap(l -> l.payload().updated().stream())
+      .min(LocalDateTime::compareTo);
   }
 }

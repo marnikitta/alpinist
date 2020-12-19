@@ -1,13 +1,8 @@
 package com.marnikitta.alpinist.application.frontend.render;
 
-import com.marnikitta.alpinist.application.frontend.AlpinistFrontend;
 import com.marnikitta.alpinist.model.Link;
 import com.marnikitta.alpinist.model.LinkPayload;
 import com.marnikitta.alpinist.service.api.LinkSpace;
-import com.vladsch.flexmark.ast.Node;
-import com.vladsch.flexmark.html.HtmlRenderer;
-import com.vladsch.flexmark.parser.Parser;
-import com.vladsch.flexmark.util.options.MutableDataSet;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,12 +11,9 @@ public class SpaceRenderer {
   private final static int GRADIENTS_COUNT = 25;
   private final String prefix;
   private final IncomingLinkRenderer incomingLinkRenderer;
+  private final static MarkdownRenderer renderer = new MarkdownRenderer();
 
   private final Template spaceTemplate = new Template("links/space.html");
-
-  private static final MutableDataSet options = new MutableDataSet();
-  private static final Parser parser = Parser.builder(options).build();
-  private static final HtmlRenderer renderer = HtmlRenderer.builder(options).build();
 
   public SpaceRenderer(String prefix) {
     this.prefix = prefix;
@@ -77,12 +69,10 @@ public class SpaceRenderer {
 
     final String outlinkPrefix = prefix + "/links/";
     final String outlinkPattern = "<a href=\"" + outlinkPrefix + "%s\" class=\"outlink\">[[%s]]</a>";
-    vars.put("discussion", renderMd(payload.renderedDiscussion(o -> String.format(outlinkPattern, o, o))));
-  }
-
-  public static String renderMd(String md) {
-    final Node document = parser.parse(md);
-    return renderer.render(document);
+    vars.put(
+      "discussion",
+      renderer.renderMarkdown(payload.renderedDiscussion(o -> String.format(outlinkPattern, o, o)))
+    );
   }
 
   public static String linkBackground(String name) {

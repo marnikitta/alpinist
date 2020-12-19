@@ -18,7 +18,6 @@ public class SpaceRenderer {
   private final IncomingLinkRenderer incomingLinkRenderer;
 
   private final Template spaceTemplate = new Template("links/space.html");
-  private final Template actionTemplate = new Template("links/action.html");
 
   private static final MutableDataSet options = new MutableDataSet();
   private static final Parser parser = Parser.builder(options).build();
@@ -32,10 +31,12 @@ public class SpaceRenderer {
   public String render(LinkSpace space) {
     final Map<String, String> vars = new HashMap<>();
     vars.put("title", space.name());
-    vars.put("actions", renderActions(space.name()));
+    vars.put("name", space.name());
+    vars.put("prefix", this.prefix);
 
+    vars.put("actions-hidden", "");
     if (space.name().equals("recent")) {
-      vars.put("actions", "");
+      vars.put("actions-hidden", "hidden");
     }
 
     vars.put("url", "");
@@ -77,27 +78,6 @@ public class SpaceRenderer {
     final String outlinkPrefix = prefix + "/links/";
     final String outlinkPattern = "<a href=\"" + outlinkPrefix + "%s\" class=\"outlink\">[[%s]]</a>";
     vars.put("discussion", renderMd(payload.renderedDiscussion(o -> String.format(outlinkPattern, o, o))));
-  }
-
-  private String renderActions(String linkName) {
-    return renderAction(linkName, "Edit", AlpinistFrontend.LinkAction.EDIT, false)
-      + renderAction(linkName, "Delete", AlpinistFrontend.LinkAction.DELETE, true);
-  }
-
-  public String renderAction(String linkName, String name, AlpinistFrontend.LinkAction action, boolean post) {
-    final Map<String, String> vars = new HashMap<>();
-    vars.put("name", linkName);
-    vars.put("action", action.encoded);
-    vars.put("actionName", name);
-    vars.put("prefix", prefix);
-
-    if (post) {
-      vars.put("method", "post");
-    } else {
-      vars.put("method", "get");
-    }
-
-    return actionTemplate.render(vars);
   }
 
   public static String renderMd(String md) {

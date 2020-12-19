@@ -183,7 +183,7 @@ public class AlpinistFrontend extends AllDirectives {
           .limit(100)
           .flatMap(l -> l.payload().outlinks())
           .distinct()
-          .limit(15)
+          .limit(30)
           .forEach(result::add);
 
         // 15 most frequent outlinks
@@ -193,7 +193,7 @@ public class AlpinistFrontend extends AllDirectives {
         sortedValues.sort(Map.Entry.comparingByValue());
         Collections.reverse(sortedValues);
         final List<String> frequentOutlinks = sortedValues.stream().map(Map.Entry::getKey).collect(Collectors.toList());
-        result.addAll(frequentOutlinks.subList(0, Math.min(15, frequentOutlinks.size())));
+        result.addAll(frequentOutlinks.subList(0, Math.min(30, frequentOutlinks.size())));
 
         return (List<String>) new ArrayList<>(result);
       })

@@ -3,14 +3,15 @@
         <div class="space-header-container ${background}">
             <div class="space-header">
                 <div class="space-title-container">
-                    <input type="text" name="title" placeholder="Title" value="${title}"
+                    <input id="space-title-edit" type="text" name="title" placeholder="Title" value="${title}"
                            class="link-title lined-input"/>
-                    <input type="text" name="url" placeholder="Url" value="${url}" class="link-url lined-input"/>
+                    <input id="space-title-url" type="text" name="url" placeholder="Url" value="${url}" class="link-url lined-input"/>
                     <input type="text" name="name" placeholder="name" value="${name}"
                            class="link-name lined-input hidden"/>
                 </div>
                 <div class="space-actions">
                     <button type="submit" class="header-link">Save</button>
+                    <button type="button" onclick="clearEdit()" class="header-link">Clear</button>
                 </div>
             </div>
         </div>

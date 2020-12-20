@@ -114,6 +114,7 @@ button:hover {
 
 .space-title-container {
     padding-bottom: 120px;
+    width: 100%;
 }
 
 .space-title::first-line {

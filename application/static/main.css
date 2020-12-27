@@ -365,3 +365,20 @@ button:hover {
 .background_gradient_25 {
     background: radial-gradient( circle farthest-corner at 10% 20%, rgba(90,92,106,1) 0%, rgba(32,45,58,1) 81.3% );
 }
+
+#outer-box {
+    position: relative;
+}
+
+#inner-box {
+    display: none;
+    position: absolute;
+    background-image: linear-gradient(to top, #E91E63 1px,transparent 1px);
+    background-size: 100% var(--line-height);
+    opacity: 50%;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    padding: 0px;
+}

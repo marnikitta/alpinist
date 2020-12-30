@@ -12,6 +12,17 @@ function autoGrowTextField(element) {
     return false;
 }
 
+//function highlightMatchedTags(elementsParent, text) {
+//    let allTags = elementsParent.querySelectorAll('.suggested-tag');
+//    for (let tag of allTags) {
+//        if (tag.innerText.includes(text)) {
+//            tag.hidden = false;
+//        } else {
+//            tag.hidden = true;
+//        }
+//    }
+//}
+
 function addOutlink(outlinkName) {
     let discussionEdit = document.getElementById('discussion-edit');
     let discussionValue = discussionEdit.value

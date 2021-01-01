@@ -4,9 +4,17 @@
     box-sizing: border-box;
 }
 
+:root {
+    --grey-line: 1px solid rgb(0 0 0 / 0.1) }
+
 body {
     font-family: 'Open Sans', sans-serif;
     font-size: 17px;
+}
+
+input, select, button, textarea {
+    font-family: inherit;
+    font-size: inherit;
 }
 
 a {
@@ -17,26 +25,15 @@ a:hover {
     color: #ff7600;
 }
 
-button {
-    background: #ff7600;
-    border: none;
-    cursor: pointer;
-    color: black;
-    padding: 4px 10px;
-}
-
-button:hover {
-    background: #0a8c20;
-}
-
 .header-container, .space-header-container, .space-body-container, .incoming-links-container, .footer-container {
     display: flex;
     justify-content: center;
-    padding: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 .header, .space-header, .space-body, .incoming-links, .footer {
-    width: 1200px;
+    width: 1024px;
     overflow: hidden;
 }
 
@@ -44,13 +41,17 @@ button:hover {
 .header {
     display: flex;
     justify-content: flex-start;
-    margin-bottom: 40px;
+    margin-bottom: 2em;
+}
+
+.header-container {
+    height: 4em;
 }
 
 .navigation {
     display: flex;
     justify-content: flex-start;
-    align-items: flex-end;
+    align-items: flex-start;
 }
 
 .quick-links {
@@ -65,15 +66,19 @@ button:hover {
 }
 
 .header-link {
-    margin: 0 5px;
+    margin: 0 10px;
     padding: 0;
     background: none;
-    font-family: 'Open Sans', sans-serif;
     font-weight: lighter;
-    font-size: 17px;
     text-decoration: none;
     color: white;
+    border: none;
     border-bottom: 1px solid rgba(255, 255, 255, .3);
+    cursor: pointer;
+}
+
+.header-link:first-child {
+    margin-left: 0px;
 }
 
 .header-link:active, .header-link:focus {
@@ -90,13 +95,12 @@ button:hover {
 #home {
     font-weight: bold;
     background: white;
-    underline: none;
     border: none;
     padding-left: 5px;
     padding-right: 5px;
-    mix-blend-mode: screen; 
+    mix-blend-mode: screen;
     color: black;
-    margin-left: 0px;
+    margin-right: 10px;
 }
 
 #home:hover {
@@ -106,15 +110,11 @@ button:hover {
 }
 
 /* Space */
-.space {
-    margin-bottom: 40px;
-}
-
 .space-header-container {
-    margin-top: -80px;
-    padding-top: 40px;
-    margin-bottom: 10px;
+    margin-top: -4em;
+    padding-top: 1em;
     padding-bottom: 10px;
+    margin-bottom: 1em;
 }
 
 .space-header {
@@ -126,7 +126,7 @@ button:hover {
 }
 
 .space-title-container {
-    padding-bottom: 120px;
+    padding-bottom: 6em;
     width: 100%;
 }
 
@@ -140,30 +140,22 @@ button:hover {
 }
 
 .space-body {
-    padding-bottom: 20px;
-    border-bottom: 1px solid rgb(0 0 0 / 0.1);
+    border-bottom: var(--grey-line);
+    padding-bottom: 1em;
+    margin-bottom: 1em;
 }
 
 /* Link */
 .incoming-link {
-    padding-bottom: 15px;
-    padding-top: 7px;
+    margin-bottom: 1.5em;
 }
 
 .link-title {
     font-weight: 700;
     font-size: 22px;
-    font-family: 'Open Sans', sans-serif;
-    margin-bottom: 5px;
 }
 
-.link-url {
-    font-size: 17px;
-    font-family: monospace;
-}
-
-.link-name {
-    font-size: 17px;
+.link-url, .link-name {
     font-family: monospace;
 }
 
@@ -182,10 +174,12 @@ button:hover {
 }
 
 .discussion {
-    font-size: 17px;
-    font-family: 'Open Sans', sans-serif;
     overflow-wrap: break-word;
     line-height: 1.45;
+}
+
+.discussion p:first-child {
+    margin-top: 0px;
 }
 
 .discussion p {
@@ -203,12 +197,10 @@ button:hover {
 .lined-input {
     background: none;
     width: 100%;
-    margin: 10px 0;
+    margin-bottom: 1em;
     color: white;
-    margin-bottom: 10px;
-    border-style: none none solid none;
+    border-style: none;
     border-bottom: 1px solid rgba(255, 255, 255, .3);
-    border-width: 1px;
 }
 
 .lined-input::placeholder {
@@ -225,13 +217,10 @@ button:hover {
     resize: none;
     width: 100%;
     border: 0px;
-    vertical-align: top;
-    height: 4.5em;
     background-image: linear-gradient(to top, #eee 1px,transparent 1px);
-    font-size: 18px;
     line-height: 1.5em;
     background-size: 100% 1.5em;
-    margin-bottom: 1.5em;
+    margin-bottom: 1em;
 }
 
 .discussion-edit:focus {
@@ -263,7 +252,7 @@ button:hover {
 
 .suggested-tag:hover {
     cursor: pointer;
-    opacity: 90%;
+    opacity: 100%;
 }
 
 .outlink {

@@ -5,16 +5,19 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.Status;
 import akka.japi.pf.ReceiveBuilder;
-import akka.pattern.PatternsCS;
+import akka.pattern.Patterns;
 import com.marnikitta.alpinist.model.Link;
 import com.marnikitta.alpinist.model.LinkPayload;
 import com.marnikitta.alpinist.preview.LinkPreviewService;
 import com.marnikitta.alpinist.preview.Preview;
 import com.marnikitta.alpinist.service.api.CreateLink;
 
+import java.time.Duration;
+
 public class QuickService extends AbstractActor {
   private final ActorRef linkService;
   private final ActorRef previewService;
+  private final Duration TIMEOUT = Duration.ofSeconds(5);
 
   private QuickService(ActorRef linkService) {
     this.linkService = linkService;
@@ -33,7 +36,8 @@ public class QuickService extends AbstractActor {
   }
 
   private void handleUrl(String url, ActorRef sender) {
-    PatternsCS.ask(previewService, url, 10000).thenApply(p -> (Preview) p)
+    Patterns.ask(previewService, url, TIMEOUT)
+      .thenApply(p -> (Preview) p)
       .exceptionally(throwable -> new Preview(url, url))
       .thenAccept(p -> {
         final LinkPayload payload = new LinkPayload(p.title(), url, "");
@@ -42,18 +46,15 @@ public class QuickService extends AbstractActor {
   }
 
   private void createLink(String name, LinkPayload payload, ActorRef sender) {
-    PatternsCS.ask(linkService, new CreateLink(name, payload), 10000)
+    Patterns.ask(linkService, new CreateLink(name, payload), TIMEOUT)
       .thenApply(link -> (Link) link)
-      .thenAccept(link -> sender.tell(new Status.Success(link), self()))
-      .handle((aVoid, throwable) -> {
+      .handle((link, throwable) -> {
         if (throwable != null) {
           sender.tell(new Status.Failure(throwable), self());
         } else {
-          sender.tell(new Status.Failure(new RuntimeException(
-            "Something went wrong during link creation, but I dunno what"
-          )), self());
+          sender.tell(new Status.Success(link), self());
         }
-        return aVoid;
+        return link;
       });
   }
 

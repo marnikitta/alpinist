@@ -1,7 +1,6 @@
 package com.marnikitta.alpinist.application.frontend;
 
 import akka.actor.ActorRef;
-import akka.http.javadsl.coding.Coder;
 import akka.http.javadsl.model.ContentTypes;
 import akka.http.javadsl.model.HttpResponse;
 import akka.http.javadsl.model.StatusCodes;
@@ -19,7 +18,6 @@ import com.marnikitta.alpinist.service.api.GetLink;
 import com.marnikitta.alpinist.service.api.GetSpace;
 import com.marnikitta.alpinist.service.api.LinkSpace;
 import com.marnikitta.alpinist.service.api.Sync;
-import com.marnikitta.alpinist.tg.Alert;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -47,7 +45,7 @@ public class AlpinistFrontend extends AllDirectives {
   }
 
   public Route route() {
-    return concat(
+    return encodeResponse(() -> concat(
       pathPrefix("static", () -> getFromDirectory("static")),
       path("sync", () -> post(() -> complete(sync()))),
       pathEndOrSingleSlash(() -> completeWithFuture(renderSpace("recent"))),
@@ -55,29 +53,27 @@ public class AlpinistFrontend extends AllDirectives {
         pathEndOrSingleSlash(() -> completeWithFuture(renderSpace("recent"))),
         pathPrefix(this::linkRoute)
       ))
-    );
+    ));
   }
 
   private Route linkRoute(String name) {
     return concat(
-      pathEnd(() -> encodeResponseWith(
-        List.of(Coder.Gzip),
-        () -> completeWithFuture(renderSpace(name))
-      )),
-      get(() -> path("edit", () -> completeWithFuture(renderEdit(name))
-      )),
-      post(() -> path("edit", () -> formFieldMap(map -> {
-        final String title = map.get("title");
-        final String nameField = map.get("name");
-        final String url = map.get("url");
-        final String discussion = map.get("discussion");
+      pathEnd(() -> completeWithFuture(renderSpace(name))),
+      path("edit", () -> concat(
+        get(() -> completeWithFuture(renderEdit(name))),
+        post(() -> formFieldMap(map -> {
+          final String title = map.get("title");
+          final String nameField = map.get("name");
+          final String url = map.get("url");
+          final String discussion = map.get("discussion");
 
-        if (title == null || nameField == null || url == null || discussion == null) {
-          throw new IllegalArgumentException("Expected discussion and tags params");
-        }
+          if (title == null || nameField == null || url == null || discussion == null) {
+            throw new IllegalArgumentException("Expected discussion and tags params");
+          }
 
-        return completeWithFuture(edit(name, nameField, title, url, discussion));
-      })))
+          return completeWithFuture(edit(name, nameField, title, url, discussion));
+        }))
+      ))
     );
   }
 

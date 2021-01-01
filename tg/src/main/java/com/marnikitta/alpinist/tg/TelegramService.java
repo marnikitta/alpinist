@@ -9,15 +9,14 @@ import com.marnikitta.alpinist.model.Link;
 import com.marnikitta.alpinist.quickservice.QuickService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.telegram.telegrambots.ApiContextInitializer;
-import org.telegram.telegrambots.TelegramBotsApi;
-import org.telegram.telegrambots.api.methods.send.SendMessage;
-import org.telegram.telegrambots.api.objects.Message;
-import org.telegram.telegrambots.api.objects.MessageEntity;
-import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
-import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.MessageEntity;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 public class TelegramService extends AbstractActor {
   private final Logger log = LoggerFactory.getLogger(TelegramService.class);
@@ -36,9 +35,8 @@ public class TelegramService extends AbstractActor {
   }
 
   @Override
-  public void preStart() throws TelegramApiRequestException {
-    ApiContextInitializer.init();
-    final TelegramBotsApi api = new TelegramBotsApi();
+  public void preStart() throws TelegramApiException {
+    final TelegramBotsApi api = new TelegramBotsApi(DefaultBotSession.class);
     this.bot = new TelegramLongPollingBot() {
       @Override
       public String getBotToken() {
@@ -62,7 +60,7 @@ public class TelegramService extends AbstractActor {
   public Receive createReceive() {
     return ReceiveBuilder.create()
       .match(Alert.class, alert -> {
-        bot.execute(new SendMessage(params.ownerId(), alert.toString()));
+        bot.execute(new SendMessage(String.valueOf(params.ownerId()), alert.toString()));
       })
       .match(Update.class, update -> {
         log.info("Received update '{}'", update);
@@ -100,7 +98,7 @@ public class TelegramService extends AbstractActor {
     }
 
     try {
-      bot.execute(new SendMessage(params.ownerId(), "Updated: " + link.name()));
+      bot.execute(new SendMessage(String.valueOf(params.ownerId()), "Updated: " + link.name()));
     } catch (TelegramApiException e1) {
       ooops(e1);
     }
@@ -108,7 +106,7 @@ public class TelegramService extends AbstractActor {
 
   private void ooops(Throwable e) {
     try {
-      bot.execute(new SendMessage(params.ownerId(), e.getMessage()));
+      bot.execute(new SendMessage(String.valueOf(params.ownerId()), e.getMessage()));
     } catch (TelegramApiException ignored) {
       log.error("Something went very wrong", e);
     }

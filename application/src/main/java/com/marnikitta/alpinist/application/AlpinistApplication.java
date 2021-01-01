@@ -49,7 +49,7 @@ public final class AlpinistApplication extends AbstractActor {
 
     final CommandLine commandLine = new DefaultParser().parse(options, args);
 
-    final String localDir = commandLine.getOptionValue("d");
+    final String localDir = commandLine.getOptionValue("d", "./base");
     @Nullable final String remote = commandLine.getOptionValue("r");
 
     @Nullable final BotParams botParams;

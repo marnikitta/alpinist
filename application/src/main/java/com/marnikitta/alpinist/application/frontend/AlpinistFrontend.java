@@ -1,9 +1,9 @@
 package com.marnikitta.alpinist.application.frontend;
 
 import akka.actor.ActorRef;
+import akka.http.javadsl.coding.Coder;
 import akka.http.javadsl.model.ContentTypes;
 import akka.http.javadsl.model.HttpResponse;
-import akka.http.javadsl.model.MediaTypes;
 import akka.http.javadsl.model.StatusCodes;
 import akka.http.javadsl.model.headers.Location;
 import akka.http.javadsl.server.AllDirectives;
@@ -37,47 +37,47 @@ public class AlpinistFrontend extends AllDirectives {
   private static final String PREFIX = "";
   public static final Duration TIMEOUT_MILLIS = Duration.ofMillis(10000);
   private final ActorRef linkService;
-  private final ActorRef tgService;
 
   private final PageRenderer pageRenderer = new PageRenderer(PREFIX);
   private final SpaceRenderer spaceRenderer = new SpaceRenderer(PREFIX);
   private final EditLinkRenderer editLinkRenderer = new EditLinkRenderer(PREFIX);
 
-  public AlpinistFrontend(ActorRef linkService, ActorRef tgService) {
+  public AlpinistFrontend(ActorRef linkService) {
     this.linkService = linkService;
-    this.tgService = tgService;
   }
 
   public Route route() {
     return concat(
       pathPrefix("static", () -> getFromDirectory("static")),
-      path("sync", () ->
-        post(() -> complete(sync()))
-      ),
+      path("sync", () -> post(() -> complete(sync()))),
       pathEndOrSingleSlash(() -> completeWithFuture(renderSpace("recent"))),
-      path("alert", () -> parameter("message", message -> {
-        tgService.tell(new Alert(Alert.Type.ALERT, message), ActorRef.noSender());
-        return complete(StatusCodes.OK);
-      })),
       pathPrefix("links", () -> concat(
-        pathPrefix(name -> concat(
-          pathEnd(() -> completeWithFuture(renderSpace(name))),
-          get(() -> path("edit", () -> completeWithFuture(renderEdit(name))
-          )),
-          post(() -> path("edit", () -> formFieldMap(map -> {
-            final String title = map.get("title");
-            final String nameField = map.get("name");
-            final String url = map.get("url");
-            final String discussion = map.get("discussion");
-
-            if (title == null || nameField == null || url == null || discussion == null) {
-              throw new IllegalArgumentException("Expected discussion and tags params");
-            }
-
-            return completeWithFuture(edit(name, nameField, title, url, discussion));
-          })))
-        ))
+        pathEndOrSingleSlash(() -> completeWithFuture(renderSpace("recent"))),
+        pathPrefix(this::linkRoute)
       ))
+    );
+  }
+
+  private Route linkRoute(String name) {
+    return concat(
+      pathEnd(() -> encodeResponseWith(
+        List.of(Coder.Gzip),
+        () -> completeWithFuture(renderSpace(name))
+      )),
+      get(() -> path("edit", () -> completeWithFuture(renderEdit(name))
+      )),
+      post(() -> path("edit", () -> formFieldMap(map -> {
+        final String title = map.get("title");
+        final String nameField = map.get("name");
+        final String url = map.get("url");
+        final String discussion = map.get("discussion");
+
+        if (title == null || nameField == null || url == null || discussion == null) {
+          throw new IllegalArgumentException("Expected discussion and tags params");
+        }
+
+        return completeWithFuture(edit(name, nameField, title, url, discussion));
+      })))
     );
   }
 
@@ -127,11 +127,6 @@ public class AlpinistFrontend extends AllDirectives {
     );
   }
 
-  private HttpResponse renderBody(String body) {
-    return HttpResponse.create()
-      .withEntity(ContentTypes.TEXT_HTML_UTF8, pageRenderer.render(body));
-  }
-
   private CompletionStage<List<String>> frequentOutlinks() {
     return Patterns.ask(linkService, new GetSpace("recent"), TIMEOUT_MILLIS)
       .thenApply(s -> (LinkSpace) s)
@@ -164,5 +159,10 @@ public class AlpinistFrontend extends AllDirectives {
         return (List<String>) new ArrayList<>(result);
       })
       .exceptionally(e -> List.of());
+  }
+
+  private HttpResponse renderBody(String body) {
+    return HttpResponse.create()
+      .withEntity(ContentTypes.TEXT_HTML_UTF8, pageRenderer.render(body));
   }
 }

@@ -8,11 +8,12 @@ import akka.actor.Props;
 import akka.actor.SupervisorStrategy;
 import akka.http.javadsl.ConnectHttp;
 import akka.http.javadsl.Http;
+import akka.http.javadsl.server.Route;
 import akka.japi.pf.DeciderBuilder;
 import akka.japi.pf.ReceiveBuilder;
-import akka.stream.ActorMaterializer;
 import akka.stream.Materializer;
 import com.marnikitta.alpinist.application.frontend.AlpinistFrontend;
+import com.marnikitta.alpinist.application.frontend.UtilFrontend;
 import com.marnikitta.alpinist.quickservice.QuickService;
 import com.marnikitta.alpinist.service.LinkService;
 import com.marnikitta.alpinist.tg.BotParams;
@@ -48,10 +49,8 @@ public final class AlpinistApplication extends AbstractActor {
 
     final CommandLine commandLine = new DefaultParser().parse(options, args);
 
-    final ActorSystem system = ActorSystem.create("alpinist");
-
+    final String localDir = commandLine.getOptionValue("d");
     @Nullable final String remote = commandLine.getOptionValue("r");
-    final String localDir = commandLine.getOptionValue("d", "./base");
 
     @Nullable final BotParams botParams;
     if (commandLine.hasOption("u") && commandLine.hasOption("t") && commandLine.hasOption("o")) {
@@ -69,26 +68,31 @@ public final class AlpinistApplication extends AbstractActor {
       botParams = null;
     }
 
+    final ActorSystem system = ActorSystem.create("alpinist");
     system.actorOf(AlpinistApplication.props(
-      remote,
       localDir,
+      remote,
       botParams
     ), "application");
   }
 
-  private AlpinistApplication(@Nullable String remote, String localDir, @Nullable BotParams params) {
+  private AlpinistApplication(String localDir,
+                              @Nullable String remote,
+                              @Nullable BotParams params) {
     this.remote = remote;
-    this.params = params;
     this.localDir = localDir;
+    this.params = params;
   }
 
-  public static Props props(@Nullable String remote, String localDir, @Nullable BotParams params) {
-    return Props.create(AlpinistApplication.class, remote, localDir, params);
+  public static Props props(String localDir,
+                            @Nullable String remote,
+                            @Nullable BotParams params) {
+    return Props.create(AlpinistApplication.class, localDir, remote, params);
   }
 
   @Override
   public void preStart() {
-    final Materializer materializer = ActorMaterializer.create(context());
+    final Materializer materializer = Materializer.createMaterializer(context());
 
     final ActorRef linkService;
     if (remote != null) {
@@ -106,12 +110,13 @@ public final class AlpinistApplication extends AbstractActor {
       tgService = context().system().deadLetters();
     }
 
-    final AlpinistFrontend frontend = new AlpinistFrontend(linkService, tgService);
-    //context().actorOf(Shelver.props(linkService, tgService), "shelver");
+    final AlpinistFrontend frontend = new AlpinistFrontend(linkService);
+    final UtilFrontend utilFrontend = new UtilFrontend(tgService);
 
+    final Route finalRoute = frontend.concat(frontend.route(), utilFrontend.alertRoute());
     Http.get(context().system())
       .bindAndHandle(
-        frontend.route().flow(context().system(), materializer),
+        finalRoute.flow(context().system(), materializer),
         ConnectHttp.toHost(HOST, PORT),
         materializer
       );

@@ -9,7 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-@SuppressWarnings("LockAcquiredButNotSafelyReleased")
 public class GitLinkRepository implements LinkRepository {
   private final GitClient gitClient;
   private final FileLinkRepository linkRepository;

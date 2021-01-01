@@ -35,11 +35,9 @@ public class LinkService extends AbstractActor {
 
   private LinkService(String remote, Path baseDir) throws IOException {
     this.linkRepository = new CachingLinkRepository(GitLinkRepository.createFromRemote(remote, baseDir));
-    //this.linkRepository = new CachingLinkRepository(new FileLinkRepository(baseDir));
   }
 
   private LinkService(Path baseDir) {
-    //this.linkRepository = new CachingLinkRepository(GitLinkRepository.createFromDirectory(baseDir));
     this.linkRepository = new CachingLinkRepository(new FileLinkRepository(baseDir));
   }
 

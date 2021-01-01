@@ -43,4 +43,5 @@ function addOutlink(outlinkName) {
 function clearEdit() {
     document.getElementById('space-title-url').value = '';
     document.getElementById('discussion-edit').value = '';
+    autoGrowTextField(document.getElementById('discussion-edit'));
 }

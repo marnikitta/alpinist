@@ -1,4 +1,4 @@
-package com.marnikitta.alpinist.application.frontend;
+package com.marnikitta.alpinist.application.utils;
 
 import akka.actor.ActorRef;
 import akka.http.javadsl.model.StatusCodes;

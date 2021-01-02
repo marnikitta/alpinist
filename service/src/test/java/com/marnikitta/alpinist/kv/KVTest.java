@@ -13,6 +13,5 @@ public class KVTest {
 
     final LinkPayload payload = kv.toPayload();
     final KV kv2 = new KV(payload);
-    System.out.println(kv2);
   }
 }

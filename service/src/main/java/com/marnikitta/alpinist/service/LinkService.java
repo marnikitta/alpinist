@@ -13,8 +13,7 @@ import com.marnikitta.alpinist.service.api.CreateLink;
 import com.marnikitta.alpinist.service.api.CreateOrUpdate;
 import com.marnikitta.alpinist.service.api.DeleteLink;
 import com.marnikitta.alpinist.service.api.GetLink;
-import com.marnikitta.alpinist.service.api.GetSpace;
-import com.marnikitta.alpinist.service.api.LinkSpace;
+import com.marnikitta.alpinist.service.api.GetIncomming;
 import com.marnikitta.alpinist.service.api.Sync;
 import com.marnikitta.alpinist.service.api.UpdatePayload;
 import scala.concurrent.duration.FiniteDuration;
@@ -107,14 +106,11 @@ public class LinkService extends AbstractActor {
       .match(GetLink.class, getLink -> {
         sender().tell(link(getLink.name()), self());
       })
-      .match(GetSpace.class, getSpace -> {
+      .match(GetIncomming.class, getSpace -> {
         if (getSpace.name().equals("recent")) {
-          sender().tell(new LinkSpace("recent", linkRepository.links().collect(Collectors.toList())), self());
+          sender().tell(linkRepository.links().collect(Collectors.toList()), self());
         } else {
-          final List<Link> incoming = incomingLinks(getSpace.name());
-          final LinkSpace space = link(getSpace.name()).map(l -> new LinkSpace(l, incoming))
-            .orElse(new LinkSpace(getSpace.name(), incoming));
-          sender().tell(space, self());
+          sender().tell(incomingLinks(getSpace.name()), self());
         }
       })
       .match(CreateOrUpdate.class, createOrUpdate -> {

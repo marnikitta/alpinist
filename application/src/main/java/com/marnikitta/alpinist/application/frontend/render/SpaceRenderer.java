@@ -1,12 +1,10 @@
 package com.marnikitta.alpinist.application.frontend.render;
 
-import com.marnikitta.alpinist.model.Link;
+import com.marnikitta.alpinist.application.feed.LinkSpace;
 import com.marnikitta.alpinist.model.LinkPayload;
-import com.marnikitta.alpinist.service.api.LinkSpace;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class SpaceRenderer {
   private final static int GRADIENTS_COUNT = 25;
@@ -50,9 +48,9 @@ public class SpaceRenderer {
     }
 
     final StringBuilder incomingLinks = new StringBuilder();
-    for (Link incomingLink : space.incomingLinks()) {
-      incomingLinks.append(incomingLinkRenderer.render(incomingLink));
-    }
+    space.incomingLinks().forEach(link -> {
+      incomingLinks.append(incomingLinkRenderer.render(link));
+    });
     vars.put("incoming-links", incomingLinks.toString());
 
     return spaceTemplate.render(vars);
@@ -77,8 +75,8 @@ public class SpaceRenderer {
   }
 
   public static String linkBackground(String name) {
-    //final int gradId = Math.abs(name.hashCode()) % SpaceRenderer.GRADIENTS_COUNT;
-    final int gradId = ThreadLocalRandom.current().nextInt(SpaceRenderer.GRADIENTS_COUNT);
+    final int gradId = Math.abs(name.hashCode()) % SpaceRenderer.GRADIENTS_COUNT;
+    //final int gradId = ThreadLocalRandom.current().nextInt(SpaceRenderer.GRADIENTS_COUNT);
     return "background_gradient_" + gradId;
   }
 }

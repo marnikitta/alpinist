@@ -8,15 +8,15 @@ import akka.http.javadsl.model.headers.Location;
 import akka.http.javadsl.server.AllDirectives;
 import akka.http.javadsl.server.Route;
 import akka.pattern.Patterns;
+import com.marnikitta.alpinist.application.feed.SpaceService;
 import com.marnikitta.alpinist.application.frontend.render.EditLinkRenderer;
 import com.marnikitta.alpinist.application.frontend.render.PageRenderer;
 import com.marnikitta.alpinist.application.frontend.render.SpaceRenderer;
 import com.marnikitta.alpinist.model.Link;
 import com.marnikitta.alpinist.model.LinkPayload;
 import com.marnikitta.alpinist.service.api.CreateOrUpdate;
+import com.marnikitta.alpinist.service.api.GetIncomming;
 import com.marnikitta.alpinist.service.api.GetLink;
-import com.marnikitta.alpinist.service.api.GetSpace;
-import com.marnikitta.alpinist.service.api.LinkSpace;
 import com.marnikitta.alpinist.service.api.Sync;
 
 import java.time.Duration;
@@ -36,12 +36,15 @@ public class AlpinistFrontend extends AllDirectives {
   public static final Duration TIMEOUT_MILLIS = Duration.ofMillis(10000);
   private final ActorRef linkService;
 
+  private final SpaceService spaceService;
+
   private final PageRenderer pageRenderer = new PageRenderer(PREFIX);
   private final SpaceRenderer spaceRenderer = new SpaceRenderer(PREFIX);
   private final EditLinkRenderer editLinkRenderer = new EditLinkRenderer(PREFIX);
 
   public AlpinistFrontend(ActorRef linkService) {
     this.linkService = linkService;
+    this.spaceService = new SpaceService(linkService);
   }
 
   public Route route() {
@@ -96,9 +99,7 @@ public class AlpinistFrontend extends AllDirectives {
   }
 
   private CompletionStage<HttpResponse> renderSpace(String name) {
-    return Patterns.ask(linkService, new GetSpace(name), TIMEOUT_MILLIS)
-      .thenApply(result -> (LinkSpace) result)
-      .exceptionally(t -> new LinkSpace(name, List.of()))
+    return spaceService.fetchSpace(name)
       .thenApply(space -> renderBody(spaceRenderer.render(space)));
   }
 
@@ -124,18 +125,16 @@ public class AlpinistFrontend extends AllDirectives {
   }
 
   private CompletionStage<List<String>> frequentOutlinks() {
-    return Patterns.ask(linkService, new GetSpace("recent"), TIMEOUT_MILLIS)
-      .thenApply(s -> (LinkSpace) s)
+    return Patterns.ask(linkService, new GetIncomming("recent"), TIMEOUT_MILLIS)
+      .thenApply(s -> (List<Link>) s)
       .thenApply(s -> {
         final LinkedHashSet<String> result = new LinkedHashSet<>();
 
-        final List<Link> allLinks = s.incomingLinks();
-
         // 3 most recent links
-        allLinks.stream().sorted().limit(3).map(Link::name).forEach(result::add);
+        s.stream().sorted().limit(3).map(Link::name).forEach(result::add);
 
         // 40 most recent outlinks
-        allLinks.stream()
+        s.stream()
           .sorted()
           .limit(100)
           .flatMap(l -> l.payload().outlinks())
@@ -144,7 +143,7 @@ public class AlpinistFrontend extends AllDirectives {
           .forEach(result::add);
 
         // 10 most frequent outlinks
-        final Map<String, Long> outlinkFrequency = allLinks.stream().flatMap(l -> l.payload().outlinks())
+        final Map<String, Long> outlinkFrequency = s.stream().flatMap(l -> l.payload().outlinks())
           .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
         final List<Map.Entry<String, Long>> sortedValues = new ArrayList<>(outlinkFrequency.entrySet());
         sortedValues.sort(Map.Entry.comparingByValue());

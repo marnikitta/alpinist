@@ -186,6 +186,16 @@ a:hover {
     list-style-type: none;
 }
 
+.inplace-edit {
+    opacity: 10%;
+    color: black;
+    text-decoration: none;
+}
+
+.inplace-edit:hover {
+    opacity: 100%;
+}
+
 /* Edit */
 .lined-input {
     background: none;

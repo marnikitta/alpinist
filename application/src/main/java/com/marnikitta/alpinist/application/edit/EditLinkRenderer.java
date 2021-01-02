@@ -1,5 +1,7 @@
-package com.marnikitta.alpinist.application.frontend.render;
+package com.marnikitta.alpinist.application.edit;
 
+import com.marnikitta.alpinist.application.Template;
+import com.marnikitta.alpinist.application.feed.SpaceRenderer;
 import com.marnikitta.alpinist.model.Link;
 
 import java.util.List;

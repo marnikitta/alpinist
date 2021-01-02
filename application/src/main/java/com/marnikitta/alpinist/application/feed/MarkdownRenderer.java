@@ -1,4 +1,4 @@
-package com.marnikitta.alpinist.application.frontend.render;
+package com.marnikitta.alpinist.application.feed;
 
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;

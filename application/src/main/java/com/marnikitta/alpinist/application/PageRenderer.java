@@ -1,4 +1,6 @@
-package com.marnikitta.alpinist.application.frontend.render;
+package com.marnikitta.alpinist.application;
+
+import com.marnikitta.alpinist.application.Template;
 
 import java.util.HashMap;
 import java.util.Map;

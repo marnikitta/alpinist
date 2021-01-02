@@ -1,4 +1,4 @@
-package com.marnikitta.alpinist.application.frontend;
+package com.marnikitta.alpinist.application;
 
 import akka.actor.ActorRef;
 import akka.http.javadsl.model.ContentTypes;
@@ -8,43 +8,32 @@ import akka.http.javadsl.model.headers.Location;
 import akka.http.javadsl.server.AllDirectives;
 import akka.http.javadsl.server.Route;
 import akka.pattern.Patterns;
+import com.marnikitta.alpinist.application.edit.EditService;
 import com.marnikitta.alpinist.application.feed.SpaceService;
-import com.marnikitta.alpinist.application.frontend.render.EditLinkRenderer;
-import com.marnikitta.alpinist.application.frontend.render.PageRenderer;
-import com.marnikitta.alpinist.application.frontend.render.SpaceRenderer;
 import com.marnikitta.alpinist.model.Link;
 import com.marnikitta.alpinist.model.LinkPayload;
 import com.marnikitta.alpinist.service.api.CreateOrUpdate;
-import com.marnikitta.alpinist.service.api.GetIncomming;
-import com.marnikitta.alpinist.service.api.GetLink;
 import com.marnikitta.alpinist.service.api.Sync;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class AlpinistFrontend extends AllDirectives {
-  private static final String PREFIX = "";
+  public static final String PREFIX = "";
   public static final Duration TIMEOUT_MILLIS = Duration.ofMillis(10000);
+
   private final ActorRef linkService;
 
   private final SpaceService spaceService;
+  private final EditService editService;
 
   private final PageRenderer pageRenderer = new PageRenderer(PREFIX);
-  private final SpaceRenderer spaceRenderer = new SpaceRenderer(PREFIX);
-  private final EditLinkRenderer editLinkRenderer = new EditLinkRenderer(PREFIX);
 
   public AlpinistFrontend(ActorRef linkService) {
     this.linkService = linkService;
     this.spaceService = new SpaceService(linkService);
+    this.editService = new EditService(linkService);
   }
 
   public Route route() {
@@ -99,8 +88,11 @@ public class AlpinistFrontend extends AllDirectives {
   }
 
   private CompletionStage<HttpResponse> renderSpace(String name) {
-    return spaceService.fetchSpace(name)
-      .thenApply(space -> renderBody(spaceRenderer.render(space)));
+    return spaceService.renderedSpace(name).thenApply(this::renderBody);
+  }
+
+  private CompletionStage<HttpResponse> renderEdit(String name) {
+    return editService.renderedEdit(name).thenApply(this::renderBody);
   }
 
   private HttpResponse sync() {
@@ -108,52 +100,6 @@ public class AlpinistFrontend extends AllDirectives {
     return HttpResponse.create()
       .withStatus(StatusCodes.SEE_OTHER)
       .addHeader(Location.create(PREFIX + '/'));
-  }
-
-  private CompletionStage<HttpResponse> renderEdit(String name) {
-    final CompletionStage<Link> link = Patterns.ask(linkService, new GetLink(name), TIMEOUT_MILLIS)
-      .thenApply(response -> (Optional<Link>) response)
-      .thenApply(l -> l.orElse(new Link(name, new LinkPayload(name, "", ""))));
-
-    final CompletionStage<List<String>> frequentOutlinks = frequentOutlinks();
-
-    return link.thenCombine(frequentOutlinks, (Link l, List<String> outlinks) -> renderBody(editLinkRenderer.render(
-      l,
-      outlinks
-      ))
-    );
-  }
-
-  private CompletionStage<List<String>> frequentOutlinks() {
-    return Patterns.ask(linkService, new GetIncomming("recent"), TIMEOUT_MILLIS)
-      .thenApply(s -> (List<Link>) s)
-      .thenApply(s -> {
-        final LinkedHashSet<String> result = new LinkedHashSet<>();
-
-        // 3 most recent links
-        s.stream().sorted().limit(3).map(Link::name).forEach(result::add);
-
-        // 40 most recent outlinks
-        s.stream()
-          .sorted()
-          .limit(100)
-          .flatMap(l -> l.payload().outlinks())
-          .distinct()
-          .limit(40)
-          .forEach(result::add);
-
-        // 10 most frequent outlinks
-        final Map<String, Long> outlinkFrequency = s.stream().flatMap(l -> l.payload().outlinks())
-          .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-        final List<Map.Entry<String, Long>> sortedValues = new ArrayList<>(outlinkFrequency.entrySet());
-        sortedValues.sort(Map.Entry.comparingByValue());
-        Collections.reverse(sortedValues);
-        final List<String> frequentOutlinks = sortedValues.stream().map(Map.Entry::getKey).collect(Collectors.toList());
-        result.addAll(frequentOutlinks.subList(0, Math.min(10, frequentOutlinks.size())));
-
-        return (List<String>) new ArrayList<>(result);
-      })
-      .exceptionally(e -> List.of());
   }
 
   private HttpResponse renderBody(String body) {

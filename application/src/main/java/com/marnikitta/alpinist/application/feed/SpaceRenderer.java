@@ -1,6 +1,6 @@
-package com.marnikitta.alpinist.application.frontend.render;
+package com.marnikitta.alpinist.application.feed;
 
-import com.marnikitta.alpinist.application.feed.LinkSpace;
+import com.marnikitta.alpinist.application.Template;
 import com.marnikitta.alpinist.model.LinkPayload;
 
 import java.util.HashMap;

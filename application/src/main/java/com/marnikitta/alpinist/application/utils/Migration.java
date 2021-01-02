@@ -1,6 +1,6 @@
 package com.marnikitta.alpinist.application.utils;
 
-import com.marnikitta.alpinist.service.FileLinkRepository;
+import com.marnikitta.alpinist.repository.FileLinkRepository;
 
 import java.nio.file.Path;
 

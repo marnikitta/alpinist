@@ -33,7 +33,7 @@ a:hover {
 }
 
 .header, .space-header, .space-body, .incoming-links, .footer {
-    width: 1200px;
+    width: 1024px;
     overflow: hidden;
 }
 
@@ -112,7 +112,7 @@ a:hover {
 /* Space */
 .space-header-container {
     margin-top: -4em;
-    padding-top: 2em;
+    padding-top: 1em;
     padding-bottom: 10px;
     margin-bottom: 1em;
 }

@@ -1,4 +1,4 @@
-package com.marnikitta.alpinist.service;
+package com.marnikitta.alpinist.repository;
 
 import com.marnikitta.alpinist.model.Link;
 import com.marnikitta.alpinist.model.LinkPayload;
@@ -167,7 +167,7 @@ public class FileLinkRepository implements LinkRepository {
     }
   }
 
-  static void rmRf(Path directory) throws IOException {
+  public static void rmRf(Path directory) throws IOException {
     if (Files.exists(directory)) {
       Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
         @Override

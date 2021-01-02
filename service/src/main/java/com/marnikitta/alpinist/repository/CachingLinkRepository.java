@@ -1,4 +1,4 @@
-package com.marnikitta.alpinist.service;
+package com.marnikitta.alpinist.repository;
 
 import com.marnikitta.alpinist.model.Link;
 import com.marnikitta.alpinist.model.LinkPayload;

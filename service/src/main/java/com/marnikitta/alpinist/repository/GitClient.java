@@ -1,4 +1,4 @@
-package com.marnikitta.alpinist.service;
+package com.marnikitta.alpinist.repository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 

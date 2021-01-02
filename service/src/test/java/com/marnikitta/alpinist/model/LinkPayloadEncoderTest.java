@@ -1,6 +1,6 @@
 package com.marnikitta.alpinist.model;
 
-import com.marnikitta.alpinist.service.LinkEncoder;
+import com.marnikitta.alpinist.repository.LinkEncoder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

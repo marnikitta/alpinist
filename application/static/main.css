@@ -134,6 +134,7 @@ a:hover {
 
 .space-title::first-line {
     font-size: 96px;
+    line-height: 1em;
 }
 
 .space-actions {

@@ -4,6 +4,8 @@ import com.marnikitta.alpinist.model.Link;
 import com.marnikitta.alpinist.model.LinkGenerator;
 import com.marnikitta.alpinist.model.LinkPayload;
 import com.marnikitta.alpinist.model.LinkRepository;
+import com.marnikitta.alpinist.repository.FileLinkRepository;
+import com.marnikitta.alpinist.repository.GitLinkRepository;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;

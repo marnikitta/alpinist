@@ -7,6 +7,10 @@ public class GetIncomming {
     this.name = name;
   }
 
+  public GetIncomming() {
+    this.name = "recent";
+  }
+
   public String name() {
     return name;
   }

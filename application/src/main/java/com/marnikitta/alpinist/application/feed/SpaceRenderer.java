@@ -5,6 +5,7 @@ import com.marnikitta.alpinist.model.LinkPayload;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class SpaceRenderer {
   private final static int GRADIENTS_COUNT = 25;
@@ -48,9 +49,9 @@ public class SpaceRenderer {
     }
 
     final StringBuilder incomingLinks = new StringBuilder();
-    space.incomingLinks().forEach(link -> {
-      incomingLinks.append(incomingLinkRenderer.render(link));
-    });
+    Stream.concat(space.incomingLinks(), space.relevantLinks())
+      .distinct()
+      .forEach(link -> incomingLinks.append(incomingLinkRenderer.render(link)));
     vars.put("incoming-links", incomingLinks.toString());
 
     return spaceTemplate.render(vars);

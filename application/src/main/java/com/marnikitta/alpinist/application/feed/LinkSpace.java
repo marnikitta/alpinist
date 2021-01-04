@@ -5,27 +5,39 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 public class LinkSpace {
   private final String name;
   private final @Nullable Link spaceLink;
+
   private final List<Link> incomingLinks;
   private final List<Link> relevantLinks;
 
+  private final Map<EitherLink, List<Link>> siblings;
+
   public LinkSpace(String name) {
-    this(name, null, Collections.emptyList(), Collections.emptyList());
+    this(
+      name,
+      null,
+      Collections.emptyList(),
+      Collections.emptyList(),
+      Collections.emptyMap()
+    );
   }
 
   public LinkSpace(String name,
                    @Nullable Link spaceLink,
                    List<Link> incomingLinks,
-                   List<Link> relevantLinks) {
+                   List<Link> relevantLinks,
+                   Map<EitherLink, List<Link>> siblings) {
     this.name = name;
     this.spaceLink = spaceLink;
     this.incomingLinks = incomingLinks;
     this.relevantLinks = relevantLinks;
+    this.siblings = siblings;
   }
 
   public String name() {
@@ -43,5 +55,14 @@ public class LinkSpace {
   public Stream<Link> relevantLinks() {
     return this.relevantLinks.stream();
   }
+
+  public Stream<Link> allLinks() {
+    return Stream.concat(incomingLinks(), relevantLinks()).distinct();
+  }
+
+  public Map<EitherLink, List<Link>> siblings() {
+    return this.siblings;
+  }
+
 }
 

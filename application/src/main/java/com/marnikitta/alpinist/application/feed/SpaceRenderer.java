@@ -5,12 +5,12 @@ import com.marnikitta.alpinist.model.LinkPayload;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
 public class SpaceRenderer {
   private final static int GRADIENTS_COUNT = 25;
   private final String prefix;
   private final IncomingLinkRenderer incomingLinkRenderer;
+  private final SiblingsRenderer siblingsRenderer;
   private final static MarkdownRenderer renderer = new MarkdownRenderer();
 
   private final Template spaceTemplate = new Template("links/space.html");
@@ -18,6 +18,7 @@ public class SpaceRenderer {
   public SpaceRenderer(String prefix) {
     this.prefix = prefix;
     this.incomingLinkRenderer = new IncomingLinkRenderer(prefix);
+    this.siblingsRenderer = new SiblingsRenderer(prefix);
   }
 
   public String render(LinkSpace space) {
@@ -49,10 +50,13 @@ public class SpaceRenderer {
     }
 
     final StringBuilder incomingLinks = new StringBuilder();
-    Stream.concat(space.incomingLinks(), space.relevantLinks())
-      .distinct()
+    space.allLinks()
       .forEach(link -> incomingLinks.append(incomingLinkRenderer.render(link)));
     vars.put("incoming-links", incomingLinks.toString());
+
+    final StringBuilder siblingsString = new StringBuilder();
+    space.siblings().forEach((link, links) -> siblingsString.append(siblingsRenderer.render(link, links)));
+    vars.put("siblings", siblingsString.toString());
 
     return spaceTemplate.render(vars);
   }

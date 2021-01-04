@@ -12,7 +12,7 @@
 body {
     /*     font-family: 'Open Sans', sans-serif; */
     font-family: 'Source Sans Pro', sans-serif;
-    font-size: 16px;
+    font-size: 17px;
 }
 
 input, select, button, textarea {
@@ -82,7 +82,7 @@ h2 {
     margin: 0 10px;
     padding: 0;
     background: none;
-    font-weight: 200;
+    font-weight: 300;
     text-decoration: none;
     color: white;
     border: none;
@@ -155,7 +155,6 @@ h2 {
 
 .space-title::first-line {
     font-size: 96px;
-    line-height: 1em;
 }
 
 .space-actions {

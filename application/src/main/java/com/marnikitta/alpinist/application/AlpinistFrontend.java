@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import akka.http.javadsl.model.ContentTypes;
 import akka.http.javadsl.model.HttpResponse;
 import akka.http.javadsl.model.StatusCodes;
+import akka.http.javadsl.model.Uri;
 import akka.http.javadsl.model.headers.Location;
 import akka.http.javadsl.server.AllDirectives;
 import akka.http.javadsl.server.Route;
@@ -74,6 +75,7 @@ public class AlpinistFrontend extends AllDirectives {
                                              String title,
                                              String url,
                                              String discussion) {
+    final Uri redirectUri = Uri.create(PREFIX).addPathSegment("links").addPathSegment(name);
     return Patterns.ask(
       linkService,
       new CreateOrUpdate(
@@ -83,7 +85,7 @@ public class AlpinistFrontend extends AllDirectives {
       TIMEOUT_MILLIS
     ).thenCompose(o -> CompletableFuture.completedFuture(HttpResponse.create()
       .withStatus(StatusCodes.SEE_OTHER)
-      .addHeader(Location.create(PREFIX + "/links/" + name))
+      .addHeader(Location.create(redirectUri))
     ));
   }
 

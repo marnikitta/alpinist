@@ -164,7 +164,7 @@ h2 {
 
 .space-body {
     border-bottom: var(--grey-line);
-    padding-bottom: 0.5em;
+    padding-bottom: 5px;
     margin-bottom: 2em;
 }
 
@@ -232,8 +232,14 @@ h2 {
 /* Siblings */
 .siblings {
     margin-bottom: 3em;
-    column-count: 3;
+    column-count: 4;
     column-gap: 3%;
+}
+
+@media screen and (max-width: 1024px) {
+    .siblings {
+        column-count: 3;
+    }
 }
 
 @media screen and (max-width: 950px) {
@@ -251,6 +257,7 @@ h2 {
 .siblings ul {
     list-style-type: none;
     padding: 0;
+    margin-top: 0.5em;
     margin-bottom: 1em;
 }
 
@@ -258,13 +265,20 @@ h2 {
     display: none;
 }
 
+.siblings li {
+    margin-bottom: 0.7em;
+}
+
 .sibling-row {
     max-width: 300px;
     text-overflow: ellipsis;
     overflow: hidden;
-    white-space: nowrap;
+    white-space: normal;
     line-height: 1.5;
-    display: inline-block;
+    display: inline;
+    max-height: 3em;
+    word-break: break-all;
+
 }
 
 .sibling-title {

@@ -1,9 +1,11 @@
 package com.marnikitta.alpinist.model;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Link implements Comparable<Link> {
   public static final Comparator<Link> SERP_ORDER = Comparator
@@ -58,15 +60,31 @@ public class Link implements Comparable<Link> {
   }
 
   public static String filefy(String title) {
+    final String rawCleanedTitle = title.replaceAll("https://", "")
+      .replaceAll("http://", "")
+      .replaceAll(".pdf", "")
+      .replaceAll("www.", "")
+      .replaceAll(".com", "")
+      .replaceAll(".net", "")
+      .replaceAll(".ru", "")
+      .replaceAll("/", " ")
+      .replaceAll("-", " ")
+      .replaceAll("_", " ")
+      .replaceAll("\\.", " ");
+
     final Pattern pattern = Pattern.compile("[^\\p{Alnum} ]", Pattern.UNICODE_CHARACTER_CLASS);
-    final String result = pattern.matcher(title.toLowerCase()).replaceAll("")
+    final String result = pattern.matcher(rawCleanedTitle.toLowerCase())
+      .replaceAll("")
       .replaceAll("\\s+", " ")
       .trim()
       .replaceAll(" ", "_");
-    if (result.isBlank()) {
+
+    final String shortenedResult = Arrays.stream(result.split("_")).limit(8).collect(Collectors.joining("_"));
+
+    if (shortenedResult.isBlank()) {
       return UUID.randomUUID().toString();
     }
 
-    return result;
+    return shortenedResult;
   }
 }

@@ -11,6 +11,7 @@
     --link-color: rgb(0, 96, 160); 
     --link-underline-color: rgba(152,184,200,0.2); 
     --orange-color:#ff7600;
+    --h1-font-size: 60px;
 }
 
 body {
@@ -38,7 +39,7 @@ a:hover {
 
 h1 {
     font-weight: 700;
-    font-size: 60px;
+    font-size: var(--h1-font-size);
     line-height: 1em;
 }
 
@@ -158,9 +159,19 @@ h2 {
     width: 100%;
 }
 
-.space-title {
-    max-width: 760px;
+.space-title, #ruler {
+    width: 760px;
+    font-weight: 700;
+    line-height: 1em;
+    font-size: var(--h1-font-size);
+    word-break: break-all;
 }
+
+.space-title {
+    height: 160px;
+}
+
+#ruler { visibility: hidden; }
 
 .space-actions {
     display: flex;

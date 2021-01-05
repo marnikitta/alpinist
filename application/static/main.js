@@ -1,9 +1,41 @@
 window.onload = function() {
-    let discussionEdit = document.getElementById('discussion-edit');
+    const discussionEdit = document.getElementById('discussion-edit');
     if (discussionEdit) {
         autoGrowTextField(discussionEdit);
     }
+
+    const spaceTitle = document.getElementById('space-title')
+    if (spaceTitle) {
+        changeTitleFontSize(spaceTitle);
+    }
     return false;
+}
+
+function changeTitleFontSize(titleElement) {
+    titleElement.style.fontSize = titleFontSize(titleElement.innerText);
+    return false;
+}
+
+function titleFontSize(text) {
+    const ruler = document.getElementById("ruler");
+    ruler.innerText = text;
+    
+    var i = 20;
+    for (; i < 96; i += 2) {
+        ruler.style.fontSize = i + 'px';
+        if (ruler.offsetHeight > 160) {
+            break
+        };
+    }
+    return i + 'px';
+}
+
+function getTextLength(text) {
+    const ruler = document.getElementById("ruler");
+
+    ruler.innerText = text;
+    //const fontSize = getComputedStyle(ruler).fontSize.match(/\d+/)[0]
+    return ruler.offsetWidth / ruler.offsetHeight;
 }
 
 function autoGrowTextField(element) {

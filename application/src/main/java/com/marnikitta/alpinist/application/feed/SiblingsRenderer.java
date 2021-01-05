@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SiblingsRenderer {
+  private static final int MAX_TITLE_LENGTH = 60;
   private final Template siblingTemplate = new Template("links/siblings/sibling.html");
   private final Template itemTemplate = new Template("links/siblings/sibling-item.html");
 
@@ -29,10 +30,19 @@ public class SiblingsRenderer {
   }
 
   private String renderItem(Link item) {
+    final String title = item.payload().title();
+
+    final String trimmedTitle;
+    if (title.length() > MAX_TITLE_LENGTH) {
+      trimmedTitle = title.substring(0, MAX_TITLE_LENGTH) + "...";
+    } else {
+      trimmedTitle = title;
+    }
+
     return itemTemplate.render(Map.of(
       "prefix", this.prefix,
       "name", item.name(),
-      "title", item.payload().title()
+      "title", trimmedTitle
     ));
   }
 }

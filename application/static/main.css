@@ -160,11 +160,10 @@ h2 {
 }
 
 .space-title, #ruler {
-    width: 760px;
+    max-width: 760px;
     font-weight: 700;
     line-height: 1em;
     font-size: var(--h1-font-size);
-    word-break: break-all;
 }
 
 .space-title {

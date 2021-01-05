@@ -4,28 +4,36 @@ window.onload = function() {
         autoGrowTextField(discussionEdit);
     }
 
-    const spaceTitle = document.getElementById('space-title')
-    if (spaceTitle) {
-        changeTitleFontSize(spaceTitle);
-    }
+    changeTitleFontSize();
+
     return false;
 }
 
-function changeTitleFontSize(titleElement) {
-    titleElement.style.fontSize = titleFontSize(titleElement.innerText);
+window.onresize = function(event) {
+    changeTitleFontSize();
+}
+
+function changeTitleFontSize() {
+    const spaceTitle = document.getElementById('space-title')
+    if (!spaceTitle) {
+        return false;
+    }
+
+    spaceTitle.style.fontSize = titleFontSize(spaceTitle.innerText);
     return false;
 }
 
 function titleFontSize(text) {
     const ruler = document.getElementById("ruler");
     ruler.innerText = text;
-    
+
     var i = 20;
     for (; i < 96; i += 2) {
         ruler.style.fontSize = i + 'px';
         if (ruler.offsetHeight > 160) {
             break
-        };
+        }
+        ;
     }
     return i + 'px';
 }

@@ -4,6 +4,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class LinkTest {
@@ -20,7 +23,11 @@ public class LinkTest {
       new LinkPayload("title", "", "discussion", LocalDateTime.of(2020, 2, 1, 1, 1))
     );
 
-    Assert.assertTrue(link1.compareTo(link2) > 0);
+    final List<Link> list = new ArrayList<>(List.of(link1, link2));
+    Collections.sort(list);
+
+    // Newest first
+    Assert.assertEquals(list, List.of(link2, link1));
   }
 
   @Test

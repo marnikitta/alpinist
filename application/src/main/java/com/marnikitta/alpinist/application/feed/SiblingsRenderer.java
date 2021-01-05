@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SiblingsRenderer {
-  private static final int MAX_TITLE_LENGTH = 60;
+  private static final int MAX_TITLE_LENGTH = 55;
   private final Template siblingTemplate = new Template("links/siblings/sibling.html");
   private final Template itemTemplate = new Template("links/siblings/sibling-item.html");
 

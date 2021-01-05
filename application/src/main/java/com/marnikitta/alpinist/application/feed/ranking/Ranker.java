@@ -72,7 +72,7 @@ public class Ranker {
     return result;
   }
 
-  private Map<String, List<Link>> childGraph(Collection<Link> links) {
+  private Map<String, List<Link>> childGraph(List<Link> links) {
     final Map<String, List<Link>> result = new LinkedHashMap<>();
 
     for (Link l : links) {
@@ -83,6 +83,8 @@ public class Ranker {
         return children;
       }));
     }
+    result.values().forEach(Collections::sort);
+
     return result;
   }
 }

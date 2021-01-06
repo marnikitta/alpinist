@@ -50,7 +50,7 @@ public class SpaceRenderer {
     }
 
     final StringBuilder incomingLinks = new StringBuilder();
-    space.allLinks()
+    space.incomingLinks()
       .forEach(link -> incomingLinks.append(incomingLinkRenderer.render(link)));
     vars.put("incoming-links", incomingLinks.toString());
 

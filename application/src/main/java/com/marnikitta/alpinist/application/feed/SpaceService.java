@@ -32,28 +32,19 @@ public class SpaceService {
     ).thenApply(l -> (Optional<Link>) l)
       .toCompletableFuture();
 
-    final CompletableFuture<List<Link>> incomingLinks = Patterns.ask(
-      linkService,
-      new GetIncomming(name),
-      TIMEOUT_MILLIS
-    ).thenApply(l -> (List<Link>) l)
-      .toCompletableFuture();
-
     final CompletableFuture<List<Link>> allLinks = Patterns.ask(
       linkService,
       new GetIncomming(),
       TIMEOUT_MILLIS
     ).thenApply(l -> (List<Link>) l).toCompletableFuture();
 
-
-    return CompletableFuture.allOf(link, incomingLinks, allLinks)
-      .thenApply(v -> new LinkSpace(
-        name,
-        link.join().orElse(null),
-        incomingLinks.join(),
-        ranker.rankedBySeed(name, allLinks.join()),
-        ranker.rankedSiblings(name, allLinks.join())
-      ))
+    return link.thenCombine(allLinks, (l, allL) -> new LinkSpace(
+      name,
+      l.orElse(null),
+      name.equals("recent") ? allL : ranker.closedChildren(name, allL),
+      ranker.rankedBySeed(name, allL),
+      ranker.rankedSiblings(name, allL)
+    ))
       .exceptionally(t -> new LinkSpace(name));
   }
 

@@ -5,7 +5,6 @@ import com.marnikitta.alpinist.model.Link;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,16 +12,33 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Ranker {
   private static final int MAX_SIBLING_ITEMS = 7;
   private static final int MAX_SIBLINGS = 14;
 
-  public List<Link> rankedBySeed(String seedName, List<Link> links) {
+  public List<Link> closedChildren(String seedName, List<Link> links) {
     final Map<String, List<Link>> graph = childGraph(links);
-    return bfsList(seedName, graph);
+    final List<Link> list = bfsList(seedName, graph);
+    Collections.sort(list);
+    return list;
+  }
+
+  public List<Link> rankedBySeed(String seedName, List<Link> links) {
+    final Optional<Link> seedLink = links.stream().filter(l -> l.name().equals(seedName)).findFirst();
+
+    return seedLink.map(l -> l.payload().outlinks()).orElse(Stream.of())
+      .flatMap(outlink -> closedChildren(outlink, links).stream())
+      .filter(l -> !l.name().equals(seedName))
+      .distinct()
+      .sorted()
+      .limit(50)
+      .collect(Collectors.toList());
   }
 
   public Map<EitherLink, List<Link>> rankedSiblings(String seedName, List<Link> links) {

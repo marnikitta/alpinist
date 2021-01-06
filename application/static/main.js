@@ -37,15 +37,6 @@ function titleFontSize(text) {
     }
     return i + 'px';
 }
-
-function getTextLength(text) {
-    const ruler = document.getElementById("ruler");
-
-    ruler.innerText = text;
-    //const fontSize = getComputedStyle(ruler).fontSize.match(/\d+/)[0]
-    return ruler.offsetWidth / ruler.offsetHeight;
-}
-
 function autoGrowTextField(element) {
     element.style.height = '5px';
     element.style.height = (element.scrollHeight + 27 * 2) + "px";

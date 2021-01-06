@@ -72,7 +72,7 @@ public class Ranker {
 
     final Set<String> visited = new HashSet<>();
     final Queue<Link> bfsQueue = new ArrayDeque<>(graph.getOrDefault(seedName, Collections.emptyList()));
-    visited.add(seedName);
+    bfsQueue.stream().map(Link::name).forEach(visited::add);
 
     while (!bfsQueue.isEmpty()) {
       final Link next = bfsQueue.poll();

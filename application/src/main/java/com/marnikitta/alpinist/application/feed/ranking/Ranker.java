@@ -80,9 +80,9 @@ public class Ranker {
       for (Link child : graph.getOrDefault(next.name(), Collections.emptyList())) {
         if (!visited.contains(child.name())) {
           bfsQueue.offer(child);
+          visited.add(child.name());
         }
       }
-      visited.add(next.name());
     }
 
     return result;

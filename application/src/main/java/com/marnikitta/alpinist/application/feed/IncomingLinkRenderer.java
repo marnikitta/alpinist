@@ -19,10 +19,18 @@ public class IncomingLinkRenderer {
     vars.put("prefix", this.prefix);
     vars.put("name", link.name());
     vars.put("inplace-edit-hidden", "hidden");
+
+    // FIXME
+    SpaceRenderer.fillPayloadMap(this.prefix, link.payload(), vars);
+
+    vars.put("url", this.prefix + "/links/" + link.name());
+    if (!link.payload().url().isEmpty()) {
+      vars.put("url", link.payload().url());
+    }
+
     if (link.payload().rawDiscussion().isEmpty()) {
       vars.put("inplace-edit-hidden", "");
     }
-    SpaceRenderer.fillPayloadMap(this.prefix, link.payload(), vars);
     return linkTemplate.render(vars);
   }
 }

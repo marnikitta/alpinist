@@ -23,6 +23,7 @@ input, select, button, textarea {
 h2 {
     font-weight: 700;
     font-size: 25px;
+    margin-bottom: 0.25em;
 }
 
 a {
@@ -128,12 +129,13 @@ a:hover {
 
 .space-title-container {
     padding-bottom: 120px;
-    margin-top: 10px;
+    margin-top: 20px;
     width: 100%;
 }
 
 .space-title, #ruler {
     max-width: 760px;
+    line-height: 1;
     font-weight: 700;
     font-size: var(--h1-font-size);
 }
@@ -167,12 +169,27 @@ a:hover {
 }
 
 .incoming-link-title {
-    color: black !important;
+    color: black;
+}
+
+.incoming-link-title:hover {
+    color: var(--orange-color);
 }
 
 .emoji-link {
     text-decoration: none;
     border: none;
+}
+
+.lighthouse-icon {
+  display: inline-block;
+  vertical-align: text-bottom;
+  text-indent: -9999px;
+  width: 1em;
+  height: 1.3em;
+  background: url(/static/document.svg);
+  background-size: 2em 2em;
+  background-position: bottom -0.35em left -0.55em;
 }
 
 .discussion {
@@ -198,14 +215,9 @@ a:hover {
 
 .discussion ul {
     margin-left: 1.5em;
-    list-style: none;
-}
+    list-style-type: square;
+    list-style-position: outside;
 
-.discussion ul li::before {
-    display: block;
-    float: left;
-    margin-left: -1em;
-    content: "▪";
 }
 
 .discussion blockquote {

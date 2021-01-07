@@ -1,11 +1,9 @@
 <article class="incoming-link">
-    <div class="incoming-link-title">
-        <h2>
-            <a href="${prefix}/links/${name}" class="incoming-link-title">${title}</a>&nbsp<a href="${url}" class="${hidden} emoji-link">🔗</a>
-        </h2>
-    </div>
+    <h2>
+        <a href="${prefix}/links/${name}" class="incoming-link-title">${title}</a>&nbsp<a href="${url}" class="${hidden} emoji-link">🔗</a>
+    </h2>
     <div class="discussion">
+        <a href="${prefix}/links/${name}/edit" class="inplace-edit ${inplace-edit-hidden}">Что изучаешь на этот раз?</a>
         ${discussion}
     </div>
-    <a href="${prefix}/links/${name}/edit" class="inplace-edit ${inplace-edit-hidden}">Что изучаешь на этот раз?</a>
 </article>

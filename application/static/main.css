@@ -1,5 +1,6 @@
 /* Дизайн, цвета, верстка подсмотренны у ilyabirman.ru */
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@200;300;400;700&display=swap');/**/
+@import url('https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap');/**/
 * {
     margin: 0;
     padding: 0;
@@ -7,22 +8,21 @@
 }
 
 :root {
-    --grey-line: 1px solid rgb(0 0 0 / 0.1); 
-    --link-color: rgb(0, 96, 160); 
-    --link-underline-color: rgba(152,184,200,0.2); 
-    --orange-color:#ff7600;
-    --h1-font-size: 60px;
-}
+    --grey-line: 1px solid rgb(0 0 0 / 0.1); --link-color: rgb(0, 96, 160); --link-underline-color: rgba(152,184,200,0.2); --orange-color:#ff7600; --h1-font-size: 60px; }
 
 body {
-    /*     font-family: 'Open Sans', sans-serif; */
     font-family: 'Source Sans Pro', sans-serif;
-    font-size: 17px;
+    font-size: 20px;
 }
 
 input, select, button, textarea {
     font-family: inherit;
     font-size: inherit;
+}
+
+h2 {
+    font-weight: 700;
+    font-size: 25px;
 }
 
 a {
@@ -35,17 +35,6 @@ a {
 
 a:hover {
     color: var(--orange-color);
-}
-
-h1 {
-    font-weight: 700;
-    font-size: var(--h1-font-size);
-    line-height: 1em;
-}
-
-h2 {
-    font-weight: 700;
-    font-size: 22px;
 }
 
 .header-container, .space-header-container, .space-body-container, .incoming-links-container, .footer-container, .siblings-container {
@@ -121,22 +110,6 @@ h2 {
     margin-right: 20px;
 }
 
-/* #home {
-    font-weight: bold;
-    background: white;
-    border: none;
-    padding-left: 5px;
-    padding-right: 5px;
-    mix-blend-mode: screen;
-    color: black;
-    margin-right: 10px;
-}
-
-#home:hover {
-    mix-blend-mode: none;
-    background: none;
-    color: white;
-} */
 /* Space */
 .space-header-container {
     margin-top: -4em;
@@ -154,15 +127,14 @@ h2 {
 }
 
 .space-title-container {
-    padding-bottom: 8em;
-    margin-top: 1.5em;
+    padding-bottom: 120px;
+    margin-top: 10px;
     width: 100%;
 }
 
 .space-title, #ruler {
     max-width: 760px;
     font-weight: 700;
-    line-height: 1em;
     font-size: var(--h1-font-size);
 }
 
@@ -170,7 +142,9 @@ h2 {
     height: 160px;
 }
 
-#ruler { visibility: hidden; }
+#ruler {
+    visibility: hidden;
+}
 
 .space-actions {
     display: flex;
@@ -192,17 +166,8 @@ h2 {
     margin-bottom: 1.5em;
 }
 
-.incoming-link-title a {
-    color: black;
-    line-height: 1.5;
-}
-
-.incoming-link-title a:hover {
-    color: var(--orange-color);
-}
-
-.link-url, .link-name {
-    font-family: monospace;
+.incoming-link-title {
+    color: black !important;
 }
 
 .emoji-link {
@@ -212,26 +177,39 @@ h2 {
 
 .discussion {
     overflow-wrap: break-word;
-    line-height: 1.45;
 }
 
 .discussion .outlink {
     border: none;
 }
 
-.discussion p:first-child {
-    margin-top: 0px;
+.discussion h4 {
+    margin-top: 0.5em;
+}
+
+.discussion p,ul, blockquote {
+    margin-top: 0;
+    margin-bottom: 0.25em;
 }
 
 .discussion p {
-    margin: 5px 0;
+    max-width: 840px;
 }
 
 .discussion ul {
-    margin-top: 5px;
-    margin-bottom: 5px;
-    margin-left: 10px;
-    list-style-type: none;
+    margin-left: 1.5em;
+    list-style: none;
+}
+
+.discussion ul li::before {
+    display: block;
+    float: left;
+    margin-left: -1em;
+    content: "▪";
+}
+
+.discussion blockquote {
+    margin-left: 1.5em;
 }
 
 .inplace-edit {
@@ -247,14 +225,8 @@ h2 {
 /* Siblings */
 .siblings {
     margin-bottom: 3em;
-    column-count: 4;
+    column-count: 3;
     column-gap: 3%;
-}
-
-@media screen and (max-width: 1024px) {
-    .siblings {
-        column-count: 3;
-    }
 }
 
 @media screen and (max-width: 950px) {
@@ -289,21 +261,20 @@ h2 {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: normal;
-    line-height: 1.5;
     display: inline;
     max-height: 3em;
     word-break: break-all;
-
 }
 
 .sibling-title {
-    font-weight: 700;
-    font-size: 22px;
-    border: none !important;
     color: black;
 }
 
 /* Edit */
+.link-url, .link-name {
+    font-family: monospace;
+}
+
 .lined-input {
     background: none;
     width: 100%;
@@ -482,7 +453,7 @@ h2 {
     display: none;
     position: absolute;
     background-image: linear-gradient(to top, #E91E63 1px,transparent 1px);
-    background-size: 100% var(--line-height);
+    background-size: 100% 1em;
     opacity: 50%;
     height: 100%;
     width: 100%;

@@ -28,12 +28,11 @@ function titleFontSize(text) {
     ruler.innerText = text;
 
     var i = 20;
-    for (; i < 96; i += 2) {
+    for (; i < 100; i += 2) {
         ruler.style.fontSize = i + 'px';
         if (ruler.offsetHeight > 160) {
             break
         }
-        ;
     }
     return i + 'px';
 }

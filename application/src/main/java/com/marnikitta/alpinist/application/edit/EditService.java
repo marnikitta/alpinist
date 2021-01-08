@@ -33,9 +33,6 @@ public class EditService {
       .thenApply(s -> {
         final LinkedHashSet<String> result = new LinkedHashSet<>();
 
-        // 3 most recent links
-        s.stream().sorted().limit(3).map(Link::name).forEach(result::add);
-
         // 40 most recent outlinks
         s.stream()
           .sorted()
@@ -44,6 +41,9 @@ public class EditService {
           .distinct()
           .limit(40)
           .forEach(result::add);
+
+        // 2 most recent links
+        s.stream().sorted().limit(3).map(Link::name).forEach(result::add);
 
         // 10 most frequent outlinks
         final Map<String, Long> outlinkFrequency = s.stream().flatMap(l -> l.payload().outlinks())

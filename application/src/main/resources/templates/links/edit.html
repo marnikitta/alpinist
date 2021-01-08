@@ -1,5 +1,5 @@
 <article class="space space-edit">
-    <form method="post">
+    <form method="post" onsubmit="addReferrer(this)">
         <div class="space-header-container ${background}">
             <div class="space-header">
                 <div class="space-title-container">
@@ -13,8 +13,8 @@
                     </h2>
                 </div>
                 <div class="space-actions">
-                    <button type="submit" class="header-link">Сохранить</button>
-                    <button type="button" onclick="clearEdit()" class="header-link">Очистить</button>
+                    <input type="submit" class="header-link" value="Сохранить"/>
+                    <input type="button" onclick="clearEdit()" class="header-link" value="Очистить"/>
                 </div>
             </div>
         </div>

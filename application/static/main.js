@@ -75,3 +75,12 @@ function clearEdit() {
     document.getElementById('discussion-edit').value = '';
     autoGrowTextField(document.getElementById('discussion-edit'));
 }
+
+function addReferrer(formElement) {
+    let input = document.createElement("input");
+    input.setAttribute("type", "hidden");
+    input.setAttribute("name", "referrer");
+    input.setAttribute("value", document.referrer);
+    formElement.appendChild(input);
+    return true;
+}

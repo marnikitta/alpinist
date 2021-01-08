@@ -335,7 +335,7 @@ a:hover {
     padding: 0px 15px;
     margin: 5px 2px;
     color: white;
-    font-weight: lighter;
+    font-weight: 200;
     border-radius: 0.75em;
     height: 1.5em;
     max-width: 200px;
@@ -345,7 +345,7 @@ a:hover {
 
 .suggested-tag:hover {
     cursor: pointer;
-    opacity: 100%;
+    opacity: 90%;
 }
 
 .hidden {

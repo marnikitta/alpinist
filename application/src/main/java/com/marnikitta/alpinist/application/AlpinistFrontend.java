@@ -17,6 +17,7 @@ import com.marnikitta.alpinist.service.api.CreateOrUpdate;
 import com.marnikitta.alpinist.service.api.Sync;
 
 import java.time.Duration;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -60,11 +61,16 @@ public class AlpinistFrontend extends AllDirectives {
           final String url = map.get("url");
           final String discussion = map.get("discussion");
 
+          // If js is disabled, there won't be a referrer field
+          final Uri referrer = Optional.ofNullable(map.get("referrer"))
+            .map(Uri::create)
+            .orElse(Uri.create(PREFIX).addPathSegment("links").addPathSegment(name));
+
           if (title == null || nameField == null || url == null || discussion == null) {
             throw new IllegalArgumentException("Expected discussion and tags params");
           }
 
-          return completeWithFuture(edit(name, nameField, title, url, discussion));
+          return completeWithFuture(edit(name, nameField, title, url, discussion, referrer));
         }))
       ))
     );
@@ -74,8 +80,8 @@ public class AlpinistFrontend extends AllDirectives {
                                              String name,
                                              String title,
                                              String url,
-                                             String discussion) {
-    final Uri redirectUri = Uri.create(PREFIX).addPathSegment("links").addPathSegment(name);
+                                             String discussion,
+                                             Uri referrer) {
     return Patterns.ask(
       linkService,
       new CreateOrUpdate(
@@ -85,7 +91,7 @@ public class AlpinistFrontend extends AllDirectives {
       TIMEOUT_MILLIS
     ).thenCompose(o -> CompletableFuture.completedFuture(HttpResponse.create()
       .withStatus(StatusCodes.SEE_OTHER)
-      .addHeader(Location.create(redirectUri))
+      .addHeader(Location.create(referrer))
     ));
   }
 

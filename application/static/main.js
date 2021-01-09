@@ -65,8 +65,8 @@ function addOutlink(outlinkName) {
     discussionEdit.value = discussionValue
 
     autoGrowTextField(discussionEdit)
-    discussionEdit.setSelectionRange(discussionEdit.value.length, discussionEdit.value.length);
-    discussionEdit.focus()
+//    discussionEdit.setSelectionRange(discussionEdit.value.length, discussionEdit.value.length);
+//    discussionEdit.focus()
     return false;
 }
 

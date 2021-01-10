@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Ranker {
-  private static final int MAX_SIBLING_ITEMS = 7;
-  private static final int MAX_SIBLINGS = 14;
+  private static final int MAX_SIBLING_ITEMS = 5;
+  private static final int MAX_SIBLINGS = 20;
 
   public List<Link> closedChildren(String seedName, List<Link> links) {
     final Map<String, List<Link>> graph = childGraph(links);

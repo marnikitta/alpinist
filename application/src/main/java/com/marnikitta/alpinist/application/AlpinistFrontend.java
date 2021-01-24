@@ -62,7 +62,11 @@ public class AlpinistFrontend extends AllDirectives {
           final String discussion = map.get("discussion");
 
           // If js is disabled, there won't be a referrer field
-          final Uri referrer = Optional.ofNullable(map.get("referrer"))
+          String referrerStr = map.get("referrer");
+          if (referrerStr == null || referrerStr.isBlank()) {
+            referrerStr = null;
+          }
+          final Uri referrer = Optional.ofNullable(referrerStr)
             .map(Uri::create)
             .orElse(Uri.create(PREFIX).addPathSegment("links").addPathSegment(name));
 

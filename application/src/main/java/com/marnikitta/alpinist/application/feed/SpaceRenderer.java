@@ -3,6 +3,7 @@ package com.marnikitta.alpinist.application.feed;
 import com.marnikitta.alpinist.application.Template;
 import com.marnikitta.alpinist.model.LinkPayload;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,7 +81,8 @@ public class SpaceRenderer {
   }
 
   public static String linkBackground(String name) {
-    final int gradId = Math.abs(name.hashCode()) % SpaceRenderer.GRADIENTS_COUNT;
+    final int dayOfTheYear = LocalDate.now().getDayOfYear();
+    final int gradId = Math.abs(name.hashCode() + dayOfTheYear) % SpaceRenderer.GRADIENTS_COUNT;
     //final int gradId = ThreadLocalRandom.current().nextInt(SpaceRenderer.GRADIENTS_COUNT);
     return "background_gradient_" + gradId;
   }

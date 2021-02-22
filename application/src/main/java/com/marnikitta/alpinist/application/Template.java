@@ -42,7 +42,7 @@ public class Template {
     return result[0];
   }
 
-  private String resource(String name) {
+  private static String resource(String name) {
     try (BufferedReader br = new BufferedReader(new InputStreamReader(
       IncomingLinkRenderer.class.getClassLoader().getResourceAsStream("templates/" + name))
     )) {

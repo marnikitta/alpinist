@@ -1,6 +1,6 @@
 package com.marnikitta.alpinist.application;
 
-import com.marnikitta.alpinist.application.feed.IncomingLinkRenderer;
+import com.marnikitta.alpinist.application.feed.LinkRenderer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,7 +44,7 @@ public class Template {
 
   private static String resource(String name) {
     try (BufferedReader br = new BufferedReader(new InputStreamReader(
-      IncomingLinkRenderer.class.getClassLoader().getResourceAsStream("templates/" + name))
+      LinkRenderer.class.getClassLoader().getResourceAsStream("templates/" + name))
     )) {
       return br.lines().collect(Collectors.joining("\n"));
     } catch (IOException e) {

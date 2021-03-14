@@ -6,11 +6,11 @@ import com.marnikitta.alpinist.model.Link;
 import java.util.HashMap;
 import java.util.Map;
 
-public class IncomingLinkRenderer {
-  private final Template linkTemplate = new Template("links/incoming-link.html");
+public class LinkRenderer {
+  private final Template linkTemplate = new Template("links/link.html");
   private final String prefix;
 
-  public IncomingLinkRenderer(String prefix) {
+  public LinkRenderer(String prefix) {
     this.prefix = prefix;
   }
 

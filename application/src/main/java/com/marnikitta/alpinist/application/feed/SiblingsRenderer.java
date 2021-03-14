@@ -18,12 +18,12 @@ public class SiblingsRenderer {
     this.prefix = prefix;
   }
 
-  public String render(EitherLink link, List<Link> links) {
+  public String render(Link link, List<Link> links) {
     final String items = links.stream().map(this::renderItem).collect(Collectors.joining(""));
     return siblingTemplate.render(Map.of(
       "prefix", this.prefix,
       "name", link.name(),
-      "title", link.titleOrName(),
+      "title", link.payload().title(),
       "background", SpaceRenderer.linkBackground(link.name()),
       "items", items
     ));

@@ -1,6 +1,5 @@
 package com.marnikitta.alpinist.application.feed.ranking;
 
-import com.marnikitta.alpinist.application.feed.EitherLink;
 import com.marnikitta.alpinist.model.Link;
 
 import java.util.ArrayDeque;
@@ -41,10 +40,10 @@ public class Ranker {
       .collect(Collectors.toList());
   }
 
-  public Map<EitherLink, List<Link>> rankedSiblings(String seedName, List<Link> links) {
+  public Map<Link, List<Link>> rankedSiblings(String seedName, List<Link> links) {
     final Map<String, List<Link>> graph = childGraph(links);
 
-    final Map<EitherLink, List<Link>> result = new HashMap<>();
+    final Map<Link, List<Link>> result = new HashMap<>();
     final Set<String> visited = new HashSet<>();
     for (Link l : bfsList(seedName, graph)) {
       final List<Link> potentialItems = graph.getOrDefault(l.name(), List.of());
@@ -54,10 +53,7 @@ public class Ranker {
       if (visited.contains(l.name())) {
         continue;
       }
-      result.put(
-        new EitherLink(l),
-        potentialItems.subList(0, Math.min(MAX_SIBLING_ITEMS, potentialItems.size()))
-      );
+      result.put(l, potentialItems.subList(0, Math.min(MAX_SIBLING_ITEMS, potentialItems.size())));
       visited.add(l.name());
       if (result.size() >= MAX_SIBLINGS) {
         break;

@@ -30,7 +30,7 @@ public class LinkPayloadEncoderTest {
   @Test
   public void decodeDateTime() {
     final LinkPayload li = encoder.decode("# Title\n__Updated:__ 2020-07-01T12:23\n");
-    Assert.assertEquals(li.updated(), Optional.of(LocalDateTime.of(2020, 7, 1, 12, 23)));
+    Assert.assertEquals(li.updated(), LocalDateTime.of(2020, 7, 1, 12, 23));
   }
 
   @Test(expectedExceptions = DateTimeParseException.class)

@@ -29,7 +29,7 @@ public class KV {
 
   public KV(LinkPayload discussion) {
     this.cache.putAll(parseDiscussion(discussion.rawDiscussion()));
-    this.lastUpdated = discussion.updated().orElse(LinkPayload.now());
+    this.lastUpdated = discussion.updated();
   }
 
   private static Map<String, String> parseDiscussion(String discussion) {

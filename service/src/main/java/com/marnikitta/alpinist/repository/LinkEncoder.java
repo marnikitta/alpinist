@@ -32,10 +32,8 @@ public class LinkEncoder {
       sb.append(String.format("# [%s](%s)\n", linkPayload.title(), linkPayload.url()));
     }
 
-    linkPayload.updated().ifPresent(updated -> {
-      final String dateString = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(updated);
-      sb.append("\n__Updated:__ ").append(dateString).append("\n");
-    });
+    final String dateString = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(linkPayload.updated());
+    sb.append("\n__Updated:__ ").append(dateString).append("\n");
 
     sb.append('\n').append(linkPayload.rawDiscussion());
 

@@ -13,16 +13,14 @@ public class LinkSpace {
   private final String name;
   private final @Nullable Link spaceLink;
 
-  private final List<Link> incomingLinks;
-  private final List<Link> relevantLinks;
+  private final List<LinkGroup> linkGroups;
 
-  private final Map<EitherLink, List<Link>> siblings;
+  private final Map<Link, List<Link>> siblings;
 
   public LinkSpace(String name) {
     this(
       name,
       null,
-      Collections.emptyList(),
       Collections.emptyList(),
       Collections.emptyMap()
     );
@@ -30,13 +28,11 @@ public class LinkSpace {
 
   public LinkSpace(String name,
                    @Nullable Link spaceLink,
-                   List<Link> incomingLinks,
-                   List<Link> relevantLinks,
-                   Map<EitherLink, List<Link>> siblings) {
+                   List<LinkGroup> linkGroups,
+                   Map<Link, List<Link>> siblings) {
     this.name = name;
     this.spaceLink = spaceLink;
-    this.incomingLinks = incomingLinks;
-    this.relevantLinks = relevantLinks;
+    this.linkGroups = linkGroups;
     this.siblings = siblings;
   }
 
@@ -48,19 +44,11 @@ public class LinkSpace {
     return Optional.ofNullable(this.spaceLink);
   }
 
-  public Stream<Link> incomingLinks() {
-    return this.incomingLinks.stream();
+  public Stream<LinkGroup> linkGroups() {
+    return this.linkGroups.stream();
   }
 
-  public Stream<Link> relevantLinks() {
-    return this.relevantLinks.stream();
-  }
-
-  public Stream<Link> allLinks() {
-    return Stream.concat(incomingLinks(), relevantLinks()).distinct();
-  }
-
-  public Map<EitherLink, List<Link>> siblings() {
+  public Map<Link, List<Link>> siblings() {
     return this.siblings;
   }
 

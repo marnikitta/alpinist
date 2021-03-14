@@ -38,14 +38,14 @@ a:hover {
     color: var(--orange-color);
 }
 
-.header-container, .space-header-container, .space-body-container, .incoming-links-container, .footer-container, .siblings-container {
+.container {
     display: flex;
     justify-content: center;
     padding-left: 10px;
     padding-right: 10px;
 }
 
-.header, .space-header, .space-body, .incoming-links, .footer, .siblings {
+.header, .space-header, .space-body, .space-feed, .footer, .siblings {
     width: 1024px;
     overflow: hidden;
 }
@@ -163,16 +163,29 @@ a:hover {
     display: none;
 }
 
+.link-group-title {
+    position: -webkit-sticky;
+    position: sticky;
+    color: rgba(0, 0, 0, 0.3);
+    top: -1px;
+    border-bottom: var(--grey-line);
+    margin-bottom: 20px;
+    padding-bottom: 2px;
+    background-color: white;
+    cursor: pointer;
+
+}
+
 /* Link */
-.incoming-link {
+.link {
     margin-bottom: 1.5em;
 }
 
-.incoming-link-title {
+.link-title {
     color: black;
 }
 
-.incoming-link-title:hover {
+.link-title:hover {
     color: var(--orange-color);
 }
 

@@ -84,3 +84,8 @@ function addReferrer(formElement) {
     formElement.appendChild(input);
     return true;
 }
+
+function toggleGroupBody(id) {
+    let groupBody = document.getElementById(id).querySelector('.link-group-body');
+    groupBody.hidden = !groupBody.hidden;
+}

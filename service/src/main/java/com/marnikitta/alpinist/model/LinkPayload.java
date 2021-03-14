@@ -8,7 +8,6 @@ import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -59,8 +58,8 @@ public class LinkPayload implements Comparable<LinkPayload> {
     return url;
   }
 
-  public Optional<LocalDateTime> updated() {
-    return Optional.ofNullable(updated);
+  public LocalDateTime updated() {
+    return updated != null ? updated : LocalDateTime.MIN;
   }
 
   public LinkPayload withUpdatedNow() {
@@ -129,8 +128,7 @@ public class LinkPayload implements Comparable<LinkPayload> {
 
   @Override
   public int compareTo(@NotNull LinkPayload o) {
-    return this.updated().orElse(LocalDateTime.MIN)
-      .compareTo(o.updated().orElse(LocalDateTime.MIN));
+    return this.updated().compareTo(o.updated());
   }
 
   @Override

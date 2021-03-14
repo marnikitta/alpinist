@@ -10,15 +10,15 @@ import java.util.Map;
 public class SpaceRenderer {
   private final static int GRADIENTS_COUNT = 25;
   private final String prefix;
-  private final IncomingLinkRenderer incomingLinkRenderer;
   private final SiblingsRenderer siblingsRenderer;
+  private final LinkGroupRenderer linkGroupRenderer;
   private final static MarkdownRenderer renderer = new MarkdownRenderer();
 
   private final Template spaceTemplate = new Template("links/space.html");
 
   public SpaceRenderer(String prefix) {
     this.prefix = prefix;
-    this.incomingLinkRenderer = new IncomingLinkRenderer(prefix);
+    this.linkGroupRenderer = new LinkGroupRenderer(prefix);
     this.siblingsRenderer = new SiblingsRenderer(prefix);
   }
 
@@ -50,10 +50,10 @@ public class SpaceRenderer {
       }
     }
 
-    final StringBuilder incomingLinks = new StringBuilder();
-    space.incomingLinks()
-      .forEach(link -> incomingLinks.append(incomingLinkRenderer.render(link)));
-    vars.put("incoming-links", incomingLinks.toString());
+    final StringBuilder linkFeed = new StringBuilder();
+    space.linkGroups()
+      .forEach(group -> linkFeed.append(linkGroupRenderer.render(group)));
+    vars.put("links", linkFeed.toString());
 
     final StringBuilder siblingsString = new StringBuilder();
     space.siblings().forEach((link, links) -> siblingsString.append(siblingsRenderer.render(link, links)));

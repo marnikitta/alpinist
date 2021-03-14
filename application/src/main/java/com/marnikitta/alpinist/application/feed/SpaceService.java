@@ -59,7 +59,12 @@ public class SpaceService {
     if (name.equals("recent")) {
       resultLinks = packedIntoDateGroups(allL);
     } else {
-      resultLinks = List.of(new LinkGroup("incoming", "Входящие ссылки", ranker.closedChildren(name, allL)));
+      final List<Link> children = ranker.closedChildren(name, allL);
+      if (!children.isEmpty()) {
+        resultLinks = List.of(new LinkGroup("incoming", "Входящие ссылки", children));
+      } else {
+        resultLinks = Collections.emptyList();
+      }
     }
 
     return new LinkSpace(name, link, resultLinks, ranker.rankedSiblings(name, allL));
@@ -76,7 +81,8 @@ public class SpaceService {
       ));
     grouped.forEach((d, l) -> {
       final String standaloneMonth = d.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, new Locale("ru"));
-      final String title = standaloneMonth.substring(0, 1).toUpperCase() + standaloneMonth.substring(1) + " " + d.getYear();
+      final String title =
+        standaloneMonth.substring(0, 1).toUpperCase() + standaloneMonth.substring(1) + " " + d.getYear();
 
       result.add(new LinkGroup(d.getYear() + "-" + d.getMonth().toString(), title, l));
     });

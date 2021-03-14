@@ -12,6 +12,7 @@ public class SpaceRenderer {
   private final String prefix;
   private final SiblingsRenderer siblingsRenderer;
   private final LinkGroupRenderer linkGroupRenderer;
+  private final LinkRenderer linkRenderer;
   private final static MarkdownRenderer renderer = new MarkdownRenderer();
 
   private final Template spaceTemplate = new Template("links/space.html");
@@ -19,6 +20,7 @@ public class SpaceRenderer {
   public SpaceRenderer(String prefix) {
     this.prefix = prefix;
     this.linkGroupRenderer = new LinkGroupRenderer(prefix);
+    this.linkRenderer = new LinkRenderer(prefix);
     this.siblingsRenderer = new SiblingsRenderer(prefix);
   }
 
@@ -51,8 +53,13 @@ public class SpaceRenderer {
     }
 
     final StringBuilder linkFeed = new StringBuilder();
-    space.linkGroups()
-      .forEach(group -> linkFeed.append(linkGroupRenderer.render(group)));
+    if (space.linkGroups().count() > 1) {
+      space.linkGroups()
+        .forEach(group -> linkFeed.append(linkGroupRenderer.render(group)));
+    } else {
+      space.linkGroups().flatMap(LinkGroup::links)
+        .forEach(link -> linkFeed.append(linkRenderer.render(link)));
+    }
     vars.put("links", linkFeed.toString());
 
     final StringBuilder siblingsString = new StringBuilder();

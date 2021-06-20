@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Ranker {
+public class LinksRanker {
   private static final int MAX_SIBLING_ITEMS = 5;
   private static final int MAX_SIBLINGS = 20;
 

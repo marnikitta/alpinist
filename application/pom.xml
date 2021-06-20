@@ -25,6 +25,11 @@
         </dependency>
         <dependency>
             <groupId>com.marnikitta.alpinist</groupId>
+            <artifactId>alpinist-ml</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.marnikitta.alpinist</groupId>
             <artifactId>alpinist-quickservice</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>

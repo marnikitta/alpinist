@@ -3,7 +3,7 @@ package com.marnikitta.alpinist.application.feed;
 import akka.actor.ActorRef;
 import akka.pattern.Patterns;
 import com.marnikitta.alpinist.application.AlpinistFrontend;
-import com.marnikitta.alpinist.application.feed.ranking.Ranker;
+import com.marnikitta.alpinist.application.feed.ranking.LinksRanker;
 import com.marnikitta.alpinist.model.Link;
 import com.marnikitta.alpinist.service.api.GetIncomming;
 import com.marnikitta.alpinist.service.api.GetLink;
@@ -27,7 +27,7 @@ public class SpaceService {
   private final SpaceRenderer spaceRenderer = new SpaceRenderer(AlpinistFrontend.PREFIX);
   private static final Duration TIMEOUT_MILLIS = Duration.ofMillis(10000);
   private final ActorRef linkService;
-  private final Ranker ranker = new Ranker();
+  private final LinksRanker linksRanker = new LinksRanker();
 
   public SpaceService(ActorRef linkService) {
     this.linkService = linkService;
@@ -59,7 +59,7 @@ public class SpaceService {
     if (name.equals("recent")) {
       resultLinks = packedIntoDateGroups(allL);
     } else {
-      final List<Link> children = ranker.closedChildren(name, allL);
+      final List<Link> children = linksRanker.closedChildren(name, allL);
       if (!children.isEmpty()) {
         resultLinks = List.of(new LinkGroup("incoming", "Входящие ссылки", children));
       } else {
@@ -67,7 +67,7 @@ public class SpaceService {
       }
     }
 
-    return new LinkSpace(name, link, resultLinks, ranker.rankedSiblings(name, allL));
+    return new LinkSpace(name, link, resultLinks, linksRanker.rankedSiblings(name, allL));
   }
 
   private List<LinkGroup> packedIntoDateGroups(List<Link> links) {
